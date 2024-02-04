@@ -1,0 +1,17 @@
+.tetrisGrid {
+  @apply bg-white;
+  display: grid;
+  grid-template-rows: repeat(20, 30px); /* 20 rows, each 30px high */
+
+}
+
+.row {
+  grid-template-columns: repeat(10, 30px); /* 10 columns, each 30px wide */
+  display: grid;
+}
+
+.cell {
+  @apply border-slate-300;
+  border: 1px solid black;
+  /* box-sizing: border-box; */
+}

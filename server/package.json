@@ -1,0 +1,30 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "https://github.com/mgkgng/red-tetris",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon server.js",
+    "test": "jest --verbose --detectOpenHandles"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mgkgng/red-tetris.git"
+  },
+  "author": "jbertin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mgkgng/red-tetris/issues"
+  },
+  "homepage": "https://github.com/mgkgng/red-tetris#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^3.0.2",
+    "socket.io": "^4.7.3"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "socket.io-client": "^4.7.3"
+  }
+}
