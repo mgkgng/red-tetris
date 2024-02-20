@@ -38,4 +38,10 @@ export class GameManager {
     getRoom(id) {
         return this.rooms.get(id);
     }
+
+    checkRightRoom(roomId, socketId) {
+        const room = this.getRoom(roomId);
+        if (!room) return false;
+        return room.hasPlayer(socketId);
+    }
 }

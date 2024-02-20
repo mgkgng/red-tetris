@@ -51,6 +51,10 @@ export class Room {
         }
     }
 
+    hasPlayer(socketId) {
+        return this.player1?.socket.id === socketId || this.player2?.socket.id === socketId;
+    }
+
     generateTetrominoSeries() {
         return Array.from({length: 256}, () => Math.floor(Math.random() * 7) + 1).join('');
     }

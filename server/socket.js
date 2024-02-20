@@ -98,6 +98,16 @@
             socket.emit('gameListRes', gameManager.getAvailableRooms());
         })
 
+        socket.on('verifyRoom', ({ roomId }) => {
+            const room = gameManager.getRoom(roomId);
+            if (!room) {
+                socket.emit('roomVerified', { success: false, exists: false });
+                return;
+            }
+            const canJoin = gameManager.checkRightRoom(roomId, socket.id);
+            socket.emit('roomVerified', { success: canJoin, exists: true });
+        });
+
     });
 
     return io;

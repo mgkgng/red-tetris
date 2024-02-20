@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './page.module.css';
 import { TETRIS_BLOCK_SIZE, TETRIS_COLS, TETRIS_ROWS, SHAPES, TETRIS_SHAPES } from '@/constants';
-import { useSocket } from '@/context/SocketContext';
+import { useSocket } from '@/contexts/SocketContext';
 
 const BLOCK_COLORS: { [key: number]: string } = {
 	0: 'transparent',

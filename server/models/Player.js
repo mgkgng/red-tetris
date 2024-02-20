@@ -6,7 +6,11 @@ export class Player {
         this.socket = socket;
         this.name = name;
         this.score = 0;
-        this.game = new Tetris();
+        this.game = null;
+    }
+
+    initGame(series) {
+        this.game = new Tetris(series);
     }
 
     startGameLoop() {

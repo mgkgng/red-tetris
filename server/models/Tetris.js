@@ -22,6 +22,7 @@ export class Tetris {
 	}
 
 	getPieceAtIndex(index) {
+		console.log(this.pieceSeries)
 		return new Tetromino(this.pieceSeries[(index % this.pieceSeries.length + Math.floor(index / this.pieceSeries.length)) % 7]);
 	}
 
