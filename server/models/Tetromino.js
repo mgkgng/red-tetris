@@ -1,4 +1,4 @@
-import { TETROMINO_ROTATIONS } from "../constant.js";
+import { TETROMINO_ROTATIONS } from "../constants.js";
 
 export class Tetromino {
 	constructor(shape) {
@@ -6,7 +6,7 @@ export class Tetromino {
 		this.rotate = 0;
 	}
 
-	getWholePosition(row, col) {
+	getEntirePosition(row, col) {
 		return TETROMINO_ROTATIONS[this.shape - 1][this.rotate]
 			.map(([r, c]) => [r + row, c + col])
 	}

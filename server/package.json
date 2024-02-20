@@ -5,14 +5,13 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon server.js",
+    "start": "nodemon app.js",
     "test": "jest --verbose --detectOpenHandles"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mgkgng/red-tetris.git"
   },
-  "author": "jbertin",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/mgkgng/red-tetris/issues"

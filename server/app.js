@@ -1,12 +1,14 @@
 import express from 'express';
 import http from 'http';
-import { setupSocket } from './socketConfig.js';
+import { initSocketServer } from './socket.js';
+
+const PORT = 3000;
 
 const app = express();
 const server = http.createServer(app);
 
-setupSocket(server);
+initSocketServer(server);
 
 server.listen(3000, () => {
-  console.log('Server listening on port 3000');
+    console.log(`Server listening on port ${PORT}...`);
 });

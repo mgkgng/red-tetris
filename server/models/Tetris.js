@@ -1,5 +1,5 @@
-import { Piece } from './Tetromino.js';
-import { BOARD_ROWS, BOARD_COLS } from '../constant.js';
+import { Tetromino } from './Tetromino.js';
+import { BOARD_ROWS, BOARD_COLS } from '../constants.js';
 
 const FIX_OFFSET = 8;
 
@@ -22,7 +22,7 @@ export class Tetris {
 	}
 
 	getPieceAtIndex(index) {
-		return new Piece(this.pieceSeries[(index % this.pieceSeries.length + Math.floor(index / this.pieceSeries.length)) % 7]);
+		return new Tetromino(this.pieceSeries[(index % this.pieceSeries.length + Math.floor(index / this.pieceSeries.length)) % 7]);
 	}
 
 	initializeGrid(rows, cols) {

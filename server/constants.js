@@ -5,8 +5,6 @@ export const BLOCK_SIZE = 30;
 
 export const DROP_SPEED = 1000;
 
-// For now I won't care much a lot for the colors or whatever.
-
 export const TETROMINO_CODES = {
     I: 1,
     J: 2,
