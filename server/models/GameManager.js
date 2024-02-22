@@ -1,4 +1,5 @@
 import { Room } from './Room.js';
+import { Player } from './Player.js';
 import { uid } from '../utils.js';
 
 export class GameManager {
@@ -10,6 +11,21 @@ export class GameManager {
         const dummyId2 = this.createUid();
         this.rooms.set(dummyId1, new Room(dummyId1));
         this.rooms.set(dummyId2, new Room(dummyId2));
+    }
+
+    addPlayerToRoom(name, roomId) {
+        const room = this.rooms.get(roomId);
+        if (!room) return false;
+        const player = new Player(socket, name, roomId, room.series);
+        room.addPlayer(player);
+    }
+
+    removePlayerFromRoom(socketId) {
+        const room = this.getRoomBySocketId(socketId);
+        if (!room) return false;
+        if (!room.removePlayer(socketId)) {
+            this.rooms.delete(room.uid);
+        }
     }
 
     createUid() {
@@ -26,10 +42,14 @@ export class GameManager {
         return true;
     }
 
+    getPlayerBySocketId(socketId) {
+        return this.players.get(socketId);
+    }
+
     getAvailableRooms() {
         const res = [];
         for (let [id, room] of this.rooms) {
-            if (room.isFree())
+            if (!room.playing && room.joinedPlayer < 3)
                 res.push({ id, level: room.level });
         }
         return res;
@@ -39,9 +59,4 @@ export class GameManager {
         return this.rooms.get(id);
     }
 
-    checkRightRoom(roomId, socketId) {
-        const room = this.getRoom(roomId);
-        if (!room) return false;
-        return room.hasPlayer(socketId);
-    }
 }

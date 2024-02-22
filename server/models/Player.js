@@ -2,11 +2,12 @@ import { TETROMINO_CODES } from '../constants.js';
 import { Tetris } from './Tetris.js';
 
 export class Player {
-    constructor(socket, name) {
+    constructor(socket, name, roomId, pieceSeries) {
         this.socket = socket;
         this.name = name;
         this.score = 0;
-        this.game = null;
+        this.game = new Tetris(pieceSeries);
+        this.roomId = roomId;
     }
 
     initGame(series) {

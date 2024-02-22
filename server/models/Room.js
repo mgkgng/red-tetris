@@ -1,58 +1,41 @@
-import { Player } from "./Player.js";
-
 export class Room {
     constructor(uid) {
         this.series = this.generateTetrominoSeries();
-        this.player1 = null;
-        this.player2 = null;
+        this.playing = false;
+        this.players = new Map();
+        this.joinedPlayer = [];
+        this.host = null;
         this.uid = uid;
         this.level = 1; // TODO bonus
     }
 
     broadcast(event, data) {
-        this.player1.socket.emit(event, data);
-        this.player2.socket.emit(event, data);
+        for (let player of this.players.values())
+            player.socket.emit(event, data);
     }
 
-    isFree() {
-        return !this.player1 || !this.player2;
-    }
-
-    addPlayer1(socket, name) {
-        this.tetris.set(socket.id, new Tetris(this.series));
-        this.player1 = new Player(socket, name);
-    }
-
-    addPlayer2(socket, name) {
-        this.tetris.set(socket.id, new Tetris(this.series));
-        this.player2 = new Player(socket, name);
+    addPlayer(player) {
+        this.players.set(socket.id, player);
+        this.joinedPlayer.push(socket.id);
+        if (!host) this.host = socket.id;
     }
 
     startGame() {
         this.broadcast('gameStarted', {
             pieces: [
-                this.player1.gameBoard.currentPiece.shape,
-                this.player1.gameBoard.nextPiece.shape
+                this.series[0],
+                this.series[1]
             ]
         });
-        this.player1.gameLoop();
-        this.player2.gameLoop();
     }
 
-    removePlayer(player) {
-        this.tetris.delete(player.socket.id);
-        if (player.id === this.player1.id) {
-            this.player2.socket.emit('roomDestroyed');
+    removePlayer(socketId) {
+        this.players.delete(socketId);
+        if (this.players.size() === 0)
             return false;
-        } else {
-            this.player2 = null;
-            this.player1.socket.emit('playerLeft');
-            return true;
-        }
-    }
-
-    hasPlayer(socketId) {
-        return this.player1?.socket.id === socketId || this.player2?.socket.id === socketId;
+        this.joinedPlayer.shift();
+        this.host = this.joinedPlayer[0];
+        return true;
     }
 
     generateTetrominoSeries() {

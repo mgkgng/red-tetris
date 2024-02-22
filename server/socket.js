@@ -100,12 +100,17 @@
 
         socket.on('verifyRoom', ({ roomId }) => {
             const room = gameManager.getRoom(roomId);
+            const player = gameManager.getPlayerBySocketId(socket.id);
             if (!room) {
                 socket.emit('roomVerified', { success: false, exists: false });
                 return;
             }
-            const canJoin = gameManager.checkRightRoom(roomId, socket.id);
             socket.emit('roomVerified', { success: canJoin, exists: true });
+        });
+
+        socket.on('disconnect', () => {
+            console.log('User disconnected:', socket.id);
+            // gameManager.removePlayer(socket.id);
         });
 
     });
