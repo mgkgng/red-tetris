@@ -12,7 +12,7 @@ export class Tetris {
 		this.pieceSeries = series;
 		this.currentPiece = this.getPieceAtIndex(this.pieceIndex)
 		this.nextPiece = this.getPieceAtIndex(this.pieceIndex + 1)
-		this.currentPos = { row: -1, col: Math.floor(c / 2) };  
+		this.currentPos = { row: -1, col: Math.floor(BOARD_COLS / 2) };  
 		this.piecesListSeed = 0;
 		this.dropInterval = 1000;
 		this.intervalId = null;

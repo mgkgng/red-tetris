@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './page.module.css';
-import { TETRIS_BLOCK_SIZE, TETRIS_COLS, TETRIS_ROWS, SHAPES, TETRIS_SHAPES } from '@/constants';
+import { TETRIS_BLOCK_SIZE, TETRIS_COLS, TETRIS_ROWS, SHAPES, TETRIS_SHAPES } from '@/constants.js';
 import { useSocket } from '@/contexts/SocketContext';
 
 const BLOCK_COLORS = {
@@ -17,7 +17,7 @@ const BLOCK_COLORS = {
 };
 
 const TetrisGame = ({ socket }) => {
-	const [grid, setGrid] = useState<number[][]>(Array.from({ length: TETRIS_ROWS }, () => new Array(TETRIS_COLS).fill(0)));
+	const [grid, setGrid] = useState(Array.from({ length: TETRIS_ROWS }, () => new Array(TETRIS_COLS).fill(0)));
 	const acceleartingRef = useRef(false);
 	const updateGrid = useCallback((newGridData) => {
 		setGrid(newGridData);

@@ -14,10 +14,11 @@ export class Room {
             player.socket.emit(event, data);
     }
 
-    addPlayer(player) {
-        this.players.set(socket.id, player);
-        this.joinedPlayer.push(socket.id);
-        if (!host) this.host = socket.id;
+    addPlayer(socketId, player) {
+        this.players.set(socketId, player);
+        this.joinedPlayer.push(socketId);
+        if (!this.host) this.host = socketId;
+        player.initTetris(this.series);
     }
 
     startGame() {

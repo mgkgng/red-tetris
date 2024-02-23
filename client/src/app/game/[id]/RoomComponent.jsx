@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { useSocket } from "@/contexts/SocketContext";
+import { useSocket } from "@/contexts/SocketContext.jsx";
+import { redirect } from "next/navigation";
 
 const RoomComponent = ({id}) => {
     const { socket } = useSocket();

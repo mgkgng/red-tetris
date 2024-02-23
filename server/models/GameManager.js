@@ -20,8 +20,8 @@ export class GameManager {
         room.addPlayer(player);
     }
 
-    removePlayerFromRoom(socketId) {
-        const room = this.getRoomBySocketId(socketId);
+    removePlayerFromRoom(roomId) {
+        const room = this.getRoomByRoomId(roomId);
         if (!room) return false;
         if (!room.removePlayer(socketId)) {
             this.rooms.delete(room.uid);
@@ -44,6 +44,10 @@ export class GameManager {
 
     getPlayerBySocketId(socketId) {
         return this.players.get(socketId);
+    }
+
+    getRoomByRoomId(roomId) {
+        return this.rooms.get(roomId);
     }
 
     getAvailableRooms() {

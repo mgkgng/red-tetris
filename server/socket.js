@@ -81,12 +81,14 @@
             console.log('joinRoom Request received', data);
             const room = gameManager.getRoom(data.roomId);
             const player = new Player(socket, data.name);
+            gameManager.players.set(socket.id, player);
 
-            // if (!room || !room.addPlayer(player)) {
-            //     socket.emit('joinRoomRes', { success: false });
-            // } else {
-            //     socket.emit('joinRoomRes', { success: true, id: data.roomId });
-            // }
+            if (!room) {
+                socket.emit('joinRoomRes', { success: false });
+                return;
+            }
+            room.addPlayer(socket.id, player);
+            socket.emit('joinRoomRes', { success: true, roomId: room.uid});            
         })
 
         socket.on('createRoom', (data) => {
@@ -100,17 +102,30 @@
 
         socket.on('verifyRoom', ({ roomId }) => {
             const room = gameManager.getRoom(roomId);
-            const player = gameManager.getPlayerBySocketId(socket.id);
+            console.log(room)
             if (!room) {
-                socket.emit('roomVerified', { success: false, exists: false });
+                socket.emit('roomVerified', { success: false, roomExists: false });
                 return;
             }
-            socket.emit('roomVerified', { success: canJoin, exists: true });
+
+            const player = gameManager.getPlayerBySocketId(socket.id);
+            if (!player) {
+                socket.emit('roomVerified', { success: false, playerExists: false });
+                return;
+            }
+
+            console.log(player)
+
+            if (player.roomId === roomId)
+                socket.emit('roomVerified', { success: true, roomExists: true });
+            else
+                console.log('not yet here')
         });
 
         socket.on('disconnect', () => {
             console.log('User disconnected:', socket.id);
-            // gameManager.removePlayer(socket.id);
+            const player = gameManager.getPlayerBySocketId(socket.id);
+            player && gameManager.removePlayerFromRoom(player.roomId);
         });
 
     });

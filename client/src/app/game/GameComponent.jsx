@@ -1,11 +1,10 @@
 'use client'
 
-// page.tsx
-import { useSocket } from '@/contexts/SocketContext';
+import { useSocket } from '@/contexts/SocketContext.jsx';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import TetrisGame from '@/components/tetris/TetrisGame';
-import Button from '@/components/Button';
+import TetrisGame from '@/components/tetris/TetrisGame.jsx';
+import Button from '@/components/Button.jsx';
 
 // TODO set waiting state
 const GAME_STATES = {
@@ -60,6 +59,7 @@ const GameComponent = () => {
 			socket?.off('playerAdded');
 			socket?.off('gameCreated');
 			socket?.off('gameListRes');
+			socket?.off('joinRoomRes');
 		};
     }, [socket, gameState]);
 
