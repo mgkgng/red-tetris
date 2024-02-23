@@ -1,7 +1,5 @@
 'use client'
-import Image from 'next/image'
 import styles from './page.module.css'
-import Button from '@/components/Button'
 import Link from 'next/link';
 import { useEffect } from 'react';
 

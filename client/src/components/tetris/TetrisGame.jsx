@@ -5,7 +5,7 @@ import styles from './page.module.css';
 import { TETRIS_BLOCK_SIZE, TETRIS_COLS, TETRIS_ROWS, SHAPES, TETRIS_SHAPES } from '@/constants';
 import { useSocket } from '@/contexts/SocketContext';
 
-const BLOCK_COLORS: { [key: number]: string } = {
+const BLOCK_COLORS = {
 	0: 'transparent',
 	1: 'cyan',
 	2: 'blue',
