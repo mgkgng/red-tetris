@@ -22,7 +22,6 @@ export class Tetris {
 	}
 
 	getPieceAtIndex(index) {
-		console.log(this.pieceSeries)
 		return new Tetromino(this.pieceSeries[(index % this.pieceSeries.length + Math.floor(index / this.pieceSeries.length)) % 7]);
 	}
 
@@ -79,15 +78,18 @@ export class Tetris {
 		if (!this.currentPiece) return;
 
 		const { row, col } = this.currentPos;
-		const positions = this.currentPiece.getPositionInGrid(row, col);
+		const positions = this.currentPiece.getEntirePosition(row, col);
 		positions.forEach(([r, c]) => { this.grid[r][c] = this.currentPiece.shape; });
 	}
 
 	cleanCurrentPosition() {
 		const { row, col } = this.currentPos;
-		const positions = this.currentPiece.getPositionInGrid(row, col);
+		const positions = this.currentPiece.getEntirePosition(row, col);
 
-		positions.forEach(([r, c]) => { this.grid[r][c] = 0; });
+		positions.forEach(([r, c]) => {
+			if (r < 0) return;
+			this.grid[r][c] = 0;
+		});
 	}
 
 	isPositionValid(positions) {
@@ -99,14 +101,14 @@ export class Tetris {
 	
 	fixPiece() {
 		const { row, col } = this.currentPos;
-		const positions = this.currentPiece.getPositionInGrid(row, col);
+		const positions = this.currentPiece.getEntirePosition(row, col);
 		positions.forEach(([r, c]) => { this.grid[r][c] = FIX_OFFSET + this.currentPiece.shape; });
 		this.pieceIndex++;
 	}
 
 	updatePiece() {
 		this.currentPiece = this.nextPiece;
-		this.nextPiece = this.createRandomPiece();
+		this.nextPiece = this.getPieceAtIndex(this.pieceIndex);
 		this.currentPos = { row: -1, col: Math.floor(this.cols / 2) };
 	}
 

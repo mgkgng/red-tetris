@@ -11,16 +11,19 @@ export class Room {
     }
 
     broadcast(event, data) {
+        // TODO check if it's binded well when a player leaves
         for (let player of this.players.values())
-            player.socket.emit(event, data);
+            player.socket.connected && player.socket.emit(event, data);
     }
 
     addPlayer(socketId, player) {
-        console.log('its weird', this.series)
-
         this.players.set(socketId, player);
         this.joinedPlayer.push(socketId);
-        if (!this.host) this.host = socketId;
+        console.log('check host', this.host)
+        if (!this.host) {
+            this.host = socketId;
+            player.socket.emit('updateHost', { name: player.nickname, id: socketId});
+        }
         player.initTetris(this.series);
     }
 
@@ -31,6 +34,9 @@ export class Room {
                 this.series[1]
             ]
         });
+        this.playing = true;
+        for (let player of this.players.values())
+            player.startGameLoop(this.broadcast.bind(this));
     }
 
     removePlayer(socketId) {

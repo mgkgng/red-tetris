@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './page.module.css';
 import { TETRIS_BLOCK_SIZE, TETRIS_COLS, TETRIS_ROWS, SHAPES, TETRIS_SHAPES } from '@/constants.js';
 import { useSocket } from '@/contexts/SocketContext';
+import Button from '@/components/Button.jsx';
 
 const BLOCK_COLORS = {
 	0: 'transparent',
@@ -17,20 +18,31 @@ const BLOCK_COLORS = {
 };
 
 const TetrisGame = ({ socket }) => {
+
 	const [grid, setGrid] = useState(Array.from({ length: TETRIS_ROWS }, () => new Array(TETRIS_COLS).fill(0)));
 	const acceleartingRef = useRef(false);
 	const updateGrid = useCallback((newGridData) => {
 		setGrid(newGridData);
 	}, []);
 
-	// Websocket event listeners
 	useEffect(() => {
 		if (!socket) return;
 
-		socket.emit('startTetris', { message: "hello server" });
+		socket.on('roomConnection', (data) => {
+			console.log('roomConnection', data);
+		
+		})
 
-		socket.on('gameState', (data) => {
-			// console.log('grid received', data);
+		socket.on('gameStarted', (data) => {
+			console.log('gameStarted', data);
+		
+		})
+
+		socket.on('updateHost', (data) => {
+			console.log('updateHost', data);
+		})
+
+		socket.on('gameStateUpdate', (data) => {
 			updateGrid(data);
 		})
 
@@ -52,14 +64,12 @@ const TetrisGame = ({ socket }) => {
 			socket.off('gameState');
 			socket.off('gameOver');
 		};
-	}, []);
+	}, [socket]);
 
 	function handleKeyPress(e) {
 		if (e.key === "ArrowLeft") {
-			// setCurrentBlock(prev => ({ ...prev, col: prev.col - 1 }));
 			socket?.emit('moveBlock', { left: true });
 		} else if (e.key === "ArrowRight") {
-			// setCurrentBlock(prev => ({ ...prev, col: prev.col + 1 }));
 			socket?.emit('moveBlock', { left: false });
 		} else if (e.key === "ArrowUp") {
 			socket?.emit('rotateBlock');
@@ -81,27 +91,31 @@ const TetrisGame = ({ socket }) => {
 	}
 
 	useEffect(() => {
+		if (!socket) return;
 		window.addEventListener('keydown', handleKeyPress);
 		window.addEventListener('keyup', handleKeyUp)
 		return () => window.removeEventListener('keydown', handleKeyPress);
-	}, []);
+	}, [socket]);
 
   return (
-	<table >
-		<tbody className={styles.tetrisGrid}>
-		{grid.map((row, rowIndex) => (
-			<tr key={rowIndex} className={styles.row}>
-			{row.map((cell, cellIndex) => (
-				<td
-					key={cellIndex}
-					className={`${styles.cell}  ${cell ? 'filled' : ''}`}
-					style={{ backgroundColor: BLOCK_COLORS[cell % 8] }}
-				></td>
+	<div>
+		<div className={styles.tetrisGrid}>
+			{grid.map((row, rowIndex) => (
+				<div key={rowIndex} className={styles.row}>
+				{row.map((cell, cellIndex) => (
+					<div
+						key={cellIndex}
+						className={`${styles.cell}  ${cell ? 'filled' : ''}`}
+						style={{ backgroundColor: BLOCK_COLORS[cell % 8] }}
+					></div>
+				))}
+				</div>
 			))}
-			</tr>
-		))}
-		</tbody>
-	</table>
+		</div>
+		<Button onClick={() => socket?.emit('startGame')}
+			className="p-3 text-white bg-red-700"
+		>start game</Button>
+	</div>
   );
 }
 

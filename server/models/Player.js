@@ -8,13 +8,20 @@ export class Player {
         this.score = 0;
         this.game = null;
         this.roomId = roomId;
+        this.broadcastFunc = null;
     }
 
     initTetris(series) {
         this.game = new Tetris(series);
     }
 
-    startGameLoop() {
+    sendGameState() {
+        this.broadcastFunc && this.broadcastFunc('gameStateUpdate', this.game.grid);
+    }
+
+    startGameLoop(broadcastFunc=null) {
+        if (!this.broadcastFunc)
+            this.broadcastFunc = broadcastFunc;
         clearInterval(this.game.intervalId);
         this.game.intervalId = setInterval(() => {
             if (!this.moveDown()) {
@@ -31,7 +38,7 @@ export class Player {
                     return;
                 }
             }
-        this.sendGameState();
+            this.sendGameState();
         }, this.game.dropInterval);
     }
 
