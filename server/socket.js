@@ -29,7 +29,6 @@
             if (!room || room.playing) return;
             if (room.host !== socket.id) return;
             room.startGame();
-            console.log('game started')
         })
 
         socket.on('moveBlock', ({left}) => {
@@ -50,7 +49,6 @@
         })
 
         socket.on('hardDrop', () => {
-            console.log('hardDrop');
             const player = gameManager.getPlayerBySocketId(socket.id);
             if (player) {
                 if (player.game.gameOver || player.game.controlDisabled) return;
@@ -60,7 +58,6 @@
         })
 
         socket.on('startAccelerate', () => {
-            console.log('startAccelerate');
             const player = gameManager.getPlayerBySocketId(socket.id);
             if (player) {
                 if (player.game.gameOver || player.game.controlDisabled || player.game.accelerating) return;
@@ -71,7 +68,6 @@
         })
 
         socket.on('stopAccelerate', () => {
-            console.log('stopAccelerate');
             const player = gameManager.getPlayerBySocketId(socket.id);
             if (player) {
                 if (player.game.gameOver || player.game.controlDisabled || !player.game.accelerating) return;

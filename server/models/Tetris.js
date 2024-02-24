@@ -79,7 +79,10 @@ export class Tetris {
 
 		const { row, col } = this.currentPos;
 		const positions = this.currentPiece.getEntirePosition(row, col);
-		positions.forEach(([r, c]) => { this.grid[r][c] = this.currentPiece.shape; });
+		positions.forEach(([r, c]) => {
+			if (r < 0) return;
+			this.grid[r][c] = this.currentPiece.shape;
+		});
 	}
 
 	cleanCurrentPosition() {
@@ -102,7 +105,10 @@ export class Tetris {
 	fixPiece() {
 		const { row, col } = this.currentPos;
 		const positions = this.currentPiece.getEntirePosition(row, col);
-		positions.forEach(([r, c]) => { this.grid[r][c] = FIX_OFFSET + this.currentPiece.shape; });
+		positions.forEach(([r, c]) => {
+			if (r < 0) return;
+			this.grid[r][c] = FIX_OFFSET + this.currentPiece.shape;
+		});
 		this.pieceIndex++;
 	}
 

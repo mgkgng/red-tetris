@@ -18,12 +18,13 @@ const BLOCK_COLORS = {
 };
 
 const TetrisGame = ({ socket }) => {
-
 	const [grid, setGrid] = useState(Array.from({ length: TETRIS_ROWS }, () => new Array(TETRIS_COLS).fill(0)));
 	const acceleartingRef = useRef(false);
 	const updateGrid = useCallback((newGridData) => {
 		setGrid(newGridData);
 	}, []);
+
+	const [gameStarted, setGameStarted] = useState(false);
 
 	useEffect(() => {
 		if (!socket) return;
@@ -35,7 +36,7 @@ const TetrisGame = ({ socket }) => {
 
 		socket.on('gameStarted', (data) => {
 			console.log('gameStarted', data);
-		
+			setGameStarted(true);
 		})
 
 		socket.on('updateHost', (data) => {
@@ -52,6 +53,11 @@ const TetrisGame = ({ socket }) => {
 
 		socket.on('gameOver', (data) => {
 			console.log('gameOver', data);
+		})
+
+		socket.on('gameEnd', ({winner}) => {
+			console.log('gameEnd', winner);
+			setGameStarted(false);
 		})
 
 		socket.on('rowsCleared', (data) => {
@@ -112,9 +118,11 @@ const TetrisGame = ({ socket }) => {
 				</div>
 			))}
 		</div>
+		{!gameStarted &&
 		<Button onClick={() => socket?.emit('startGame')}
 			className="p-3 text-white bg-red-700"
 		>start game</Button>
+		}
 	</div>
   );
 }

@@ -8,7 +8,7 @@ export class Player {
         this.score = 0;
         this.game = null;
         this.roomId = roomId;
-        this.broadcastFunc = null;
+        this.room = null;
     }
 
     initTetris(series) {
@@ -16,12 +16,12 @@ export class Player {
     }
 
     sendGameState() {
-        this.broadcastFunc && this.broadcastFunc('gameStateUpdate', this.game.grid);
+        this.room && this.room.broadcast('gameStateUpdate', this.game.grid);
     }
 
-    startGameLoop(broadcastFunc=null) {
-        if (!this.broadcastFunc)
-            this.broadcastFunc = broadcastFunc;
+    startGameLoop(room=null) {
+        if (!this.room)
+            this.room = room;
         clearInterval(this.game.intervalId);
         this.game.intervalId = setInterval(() => {
             if (!this.moveDown()) {
@@ -34,7 +34,8 @@ export class Player {
                 this.game.updatePiece();
                 this.socket?.emit('nextPiece', this.game.nextPiece.shape);
                 if (this.game.checkGameOver()) {
-                    this.socket && this.socket.emit('gameOver');
+                    this.room.broadcast('gameOver', this.socket.id);
+                    this.room.checkGameEnd();
                     return;
                 }
             }
@@ -142,7 +143,8 @@ export class Player {
         this.game.updatePiece();
         this.socket?.emit('nextPiece', this.game.nextPiece.shape);
         if (this.game.checkGameOver()) {
-            this.socket?.emit('gameOver');
+            this.room.broadcast('gameOver', this.socket.id);
+            this.room.checkGameEnd();
             return;
         }
         return true;

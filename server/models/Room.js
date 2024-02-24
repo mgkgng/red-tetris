@@ -36,7 +36,7 @@ export class Room {
         });
         this.playing = true;
         for (let player of this.players.values())
-            player.startGameLoop(this.broadcast.bind(this));
+            player.startGameLoop(this);
     }
 
     removePlayer(socketId) {
@@ -46,6 +46,16 @@ export class Room {
         this.joinedPlayer.shift();
         this.host = this.joinedPlayer[0];
         return true;
+    }
+
+    checkGameEnd() {
+        let playersAlive = [...this.players.values()].filter(player => !player.game.gameOver);
+        if (playersAlive.length < 2) {
+            this.playing = false;
+            this.broadcast('gameEnd', {
+                winner: playersAlive.length ? playersAlive[0].socket.id : null
+            });
+        }
     }
 
     generateTetrominoSeries() {
