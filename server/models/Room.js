@@ -1,5 +1,6 @@
 export class Room {
-    constructor(uid) {
+    constructor(uid, titleEmojis) {
+        this.titleEmojis = titleEmojis;
         this.series = this.generateTetrominoSeries();
         this.playing = false;
         this.players = new Map();
@@ -15,6 +16,8 @@ export class Room {
     }
 
     addPlayer(socketId, player) {
+        console.log('its weird', this.series)
+
         this.players.set(socketId, player);
         this.joinedPlayer.push(socketId);
         if (!this.host) this.host = socketId;

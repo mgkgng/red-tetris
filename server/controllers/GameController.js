@@ -18,5 +18,33 @@ export const joinRoom = (req, res) => {
 };
 
 export const createRoom = (req, res) => {
-
+    const titleEmojis = req.body.titleEmojis;
+    const roomId = gameManager.setRoomInCreation(titleEmojis);
+    res.json({ roomId });
 };
+
+export const verifyRoom = (req, res) => {
+    const { id } = req.params;
+    console.log('lets verify', id);
+    if (gameManager.roomInCreation.has(id)) {
+        const room = gameManager.createRoom(id);
+        console.log('room created:', id);
+        res.status(200).json({ 
+            titleEmojis: room.titleEmojis,
+            series: room.series
+         })
+    } else {
+        const room = gameManager.getRoom(id);
+        if (!room) {
+            res.status(404).json({ message: "Room not found." });
+            return;
+        }
+        res.status(200).json({ 
+            titleEmojis: room.titleEmojis,
+            series: room.series,
+            players: room.players.map(player => player.nickname),
+            host: gameManager.getPlayerBySocketId(room.host).nickname
+         });
+
+    }
+}

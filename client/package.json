@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "emoji-picker-react": "^4.8.0",
     "htmx.org": "^1.9.10",
     "next": "14.0.4",
     "react": "^18",

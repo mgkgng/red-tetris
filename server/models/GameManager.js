@@ -5,6 +5,7 @@ import { uid } from '../utils.js';
 class GameManager {
     constructor() {
         this.rooms = new Map();
+        this.roomInCreation = new Map();
         this.players = new Map();
 
         const dummyId1 = this.createUid();
@@ -30,16 +31,28 @@ class GameManager {
 
     createUid() {
         let id = uid();
-        while (this.rooms.has(id))
+        while (this.rooms.has(id) || this.roomInCreation.has(id))
             id = uid();
         return id;
     }
 
-    createRoom(player) {
-        const room = new Room(this.createUid());
-        room.addPlayer(player);
-        this.rooms.set(room.uid, room);
-        return true;
+    setRoomInCreation(roomTitle) {
+        const uid = this.createUid();
+        this.roomInCreation.set(uid, roomTitle);
+        return uid;
+    }
+
+    // createRoom(player) {
+    //     const room = new Room(player.roomId, this.roomInCreation.get(player.roomId));
+    //     room.addPlayer(player.socket.id, player);
+    //     this.rooms.set(room.uid, room);
+    //     return room;
+    // }
+    createRoom(id) {
+        const room = new Room(id, this.roomInCreation.get(id));
+        this.rooms.set(id, room);
+        return room;
+
     }
 
     getPlayerBySocketId(socketId) {

@@ -1,11 +1,11 @@
 import express from 'express';
 const router = express.Router();
 
-// Import your controllers here
-import { getGameList, joinRoom } from '../controllers/GameController.js';
+import { getGameList, joinRoom, createRoom, verifyRoom } from '../controllers/GameController.js';
 
-// Define routes
 router.get('/game_list', getGameList);
 router.post('/join_room', joinRoom);
+router.post('/create_room', createRoom);
+router.get('/verify_room/:id', verifyRoom);
 
 export default router;
