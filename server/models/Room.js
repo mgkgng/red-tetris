@@ -28,13 +28,20 @@ export class Room {
     }
 
     startGame() {
+        if (this.playing) return;
+        
+        this.playing = true;
         this.broadcast('gameStarted', {
             pieces: [
                 this.series[0],
                 this.series[1]
             ]
         });
-        this.playing = true;
+
+        this.series = this.generateTetrominoSeries();
+        for (let player of this.players.values())
+            player.game.initialize(this.series);
+
         for (let player of this.players.values())
             player.startGameLoop(this);
     }

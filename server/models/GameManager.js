@@ -42,12 +42,6 @@ class GameManager {
         return uid;
     }
 
-    // createRoom(player) {
-    //     const room = new Room(player.roomId, this.roomInCreation.get(player.roomId));
-    //     room.addPlayer(player.socket.id, player);
-    //     this.rooms.set(room.uid, room);
-    //     return room;
-    // }
     createRoom(id) {
         const room = new Room(id, this.roomInCreation.get(id));
         this.rooms.set(id, room);

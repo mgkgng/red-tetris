@@ -31,11 +31,11 @@ const TetrisGame = ({ socket }) => {
 
 		socket.on('roomConnection', (data) => {
 			console.log('roomConnection', data);
-		
 		})
 
 		socket.on('gameStarted', (data) => {
 			console.log('gameStarted', data);
+			setGrid(Array.from({ length: TETRIS_ROWS }, () => new Array(TETRIS_COLS).fill(0)));
 			setGameStarted(true);
 		})
 

@@ -4,25 +4,27 @@ import { BOARD_ROWS, BOARD_COLS } from '../constants.js';
 const FIX_OFFSET = 8;
 
 export class Tetris {
-	constructor(series) {
+	constructor() {
 		this.rows = BOARD_ROWS;
 		this.cols = BOARD_COLS;
-		this.grid = this.initializeGrid(this.rows, this.cols);
-		this.pieceIndex = 0;
-		this.pieceSeries = series;
-		this.currentPiece = this.getPieceAtIndex(this.pieceIndex)
-		this.nextPiece = this.getPieceAtIndex(this.pieceIndex + 1)
-		this.currentPos = { row: -1, col: Math.floor(BOARD_COLS / 2) };  
-		this.piecesListSeed = 0;
-		this.dropInterval = 1000;
-		this.intervalId = null;
-		this.gameOver = false;
-		this.controlDisabled = false;
-		this.accelerating = false;
 	}
 
 	getPieceAtIndex(index) {
 		return new Tetromino(this.pieceSeries[(index % this.pieceSeries.length + Math.floor(index / this.pieceSeries.length)) % 7]);
+	}
+
+	initialize(series) {
+		this.intervalId = null;
+		this.pieceSeries = series;
+		this.grid = this.initializeGrid(this.rows, this.cols);
+		this.pieceIndex = 0;
+		this.currentPiece = this.getPieceAtIndex(this.pieceIndex);
+		this.nextPiece = this.getPieceAtIndex(this.pieceIndex + 1);
+		this.currentPos = { row: -1, col: Math.floor(BOARD_COLS / 2) };
+		this.gameOver = false;
+		this.controlDisabled = false;
+		this.accelerating = false;
+		this.dropInterval = 1000;
 	}
 
 	initializeGrid(rows, cols) {
