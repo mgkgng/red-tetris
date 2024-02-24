@@ -31,8 +31,9 @@ export const verifyRoom = (req, res) => {
         console.log('room created:', id);
         res.status(200).json({ 
             titleEmojis: room.titleEmojis,
-            series: room.series
-         })
+            players: [],
+        });
+        gameManager.roomInCreation.delete(id);
     } else {
         const room = gameManager.getRoom(id);
         if (!room) {
@@ -42,7 +43,10 @@ export const verifyRoom = (req, res) => {
         res.status(200).json({ 
             titleEmojis: room.titleEmojis,
             series: room.series,
-            players: room.players.map(player => player.nickname),
+            players: [...room.players.values()].map(player => ({
+                id: player.id,
+                nickname: player.nickname
+            })),
             host: gameManager.getPlayerBySocketId(room.host).nickname
          });
 

@@ -23,6 +23,7 @@
             return;
         }
         room.addPlayer(socket.id, player);
+        room.broadcast('playerJoined', { id: socket.id, nickname });
 
         socket.on('startGame', () => {
             const room = gameManager.getRoom(room_id);
@@ -80,7 +81,7 @@
         socket.on('disconnect', () => {
             console.log('User disconnected:', socket.id);
             const player = gameManager.getPlayerBySocketId(socket.id);
-            player && gameManager.removePlayerFromRoom(player.roomId);
+            player && gameManager.removePlayerFromRoom(socket.id, player.roomId);
         });
 
     });

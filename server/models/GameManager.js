@@ -7,11 +7,6 @@ class GameManager {
         this.rooms = new Map();
         this.roomInCreation = new Map();
         this.players = new Map();
-
-        const dummyId1 = this.createUid();
-        const dummyId2 = this.createUid();
-        this.rooms.set(dummyId1, new Room(dummyId1));
-        this.rooms.set(dummyId2, new Room(dummyId2));
     }
 
     addPlayerToRoom(name, roomId) {
@@ -21,12 +16,14 @@ class GameManager {
         room.addPlayer(player);
     }
 
-    removePlayerFromRoom(roomId) {
+    removePlayerFromRoom(socketId, roomId) {
         const room = this.getRoomByRoomId(roomId);
-        if (!room) return false;
+        if (!room) return ;
         if (!room.removePlayer(socketId)) {
             this.rooms.delete(room.uid);
+            return ;
         }
+        room.broadcast('playerLeft', { id: socketId });
     }
 
     createUid() {
@@ -60,9 +57,10 @@ class GameManager {
     getAvailableRooms() {
         const res = [];
         for (let [id, room] of this.rooms) {
-            if (!room.playing && room.joinedPlayer < 3)
+            if (!room.playing && room.joinedPlayer.length < 3)
                 res.push({ id, level: room.level });
         }
+        console.log('res:' , res)
         return res;
     }
 

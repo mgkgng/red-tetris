@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import TetrisGame from "@/components/tetris/TetrisGame";
+import PlayerList from "@/components/PlayerList";
 import io from 'socket.io-client';
 
 const Page = ({params}) => {
@@ -11,6 +12,8 @@ const Page = ({params}) => {
     const [localStorageChecked, setLocalStorageChecked] = useState(false);
     const [nickname, setNickname] = useState('');
     const [roomStateMessage, setRoomStateMessage] = useState('loading...');
+    const [players, setPlayers] = useState([]);
+    const [hostId, setHostId] = useState(null);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -27,7 +30,6 @@ const Page = ({params}) => {
         if (!localStorageChecked) return;
         async function VerifyRoom(){  
             try {
-                console.log('verifying id', params.id)
                 const response = await fetch(`http://localhost:3000/api/verify_room/${params.id}`);
                 if (!response.ok) {
                     console.log(response.status)
@@ -38,6 +40,8 @@ const Page = ({params}) => {
     
                 const data = await response.json();
                 console.log(data)
+                setPlayers(data.players);
+                setHostId(data.host);
                 setRoomVerified(true);
             } catch (error) {
                 console.error(error);
@@ -61,7 +65,12 @@ const Page = ({params}) => {
     return (
         <div>
         {roomVerified ?
-            <TetrisGame socket={socket} />
+            <div class="flex gap-5">
+                <PlayerList socket={socket} 
+                    players={players} setPlayers={setPlayers}
+                    hostId={hostId} setHostId={setHostId} />
+                <TetrisGame socket={socket} />
+            </div>
             :
             <div className="text-white">{roomStateMessage}</div>
         }

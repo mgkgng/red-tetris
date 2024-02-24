@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './page.module.css';
 import { TETRIS_BLOCK_SIZE, TETRIS_COLS, TETRIS_ROWS, SHAPES, TETRIS_SHAPES } from '@/constants.js';
-import { useSocket } from '@/contexts/SocketContext';
 import Button from '@/components/Button.jsx';
 
 const BLOCK_COLORS = {
@@ -69,6 +68,8 @@ const TetrisGame = ({ socket }) => {
 			socket.off('nextPiece');
 			socket.off('gameState');
 			socket.off('gameOver');
+			socket.off('gameEnd');
+			socket.off('rowsCleared');
 		};
 	}, [socket]);
 
