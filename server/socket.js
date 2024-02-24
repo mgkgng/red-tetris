@@ -1,8 +1,6 @@
     import { Player } from './models/Player.js';
-    import { GameManager } from './models/GameManager.js';
+    import { gameManager } from './models/GameManager.js';
     import { Server } from 'socket.io';
-
-    const gameManager = new GameManager();
 
     export function initSocketServer(server) {
     const io = new Server(server, {
@@ -76,50 +74,14 @@
                 player.gameLoop();
             }
         })
-
-        socket.on('joinRoom', (data) => {
-            console.log('joinRoom Request received', data);
-            const room = gameManager.getRoom(data.roomId);
-            const player = new Player(socket, data.name);
-            gameManager.players.set(socket.id, player);
-
-            if (!room) {
-                socket.emit('joinRoomRes', { success: false });
-                return;
-            }
-            room.addPlayer(socket.id, player);
-            socket.emit('joinRoomRes', { success: true, roomId: room.uid});            
-        })
-
-        socket.on('createRoom', (data) => {
-            gameManager.createGame(socket) && socket.emit('createRoomRes', { roomId: room.uid });
-        });
-
-        socket.on('gameListReq', () => {
-            console.log('gameList request received');
-            socket.emit('gameListRes', gameManager.getAvailableRooms());
-        })
-
-        socket.on('verifyRoom', ({ roomId }) => {
+        
+        socket.on('verifyRoom', ({ roomId, nickname }) => {
             const room = gameManager.getRoom(roomId);
-            console.log(room)
-            if (!room) {
+            if (!room || room.playing) {
                 socket.emit('roomVerified', { success: false, roomExists: false });
                 return;
             }
-
-            const player = gameManager.getPlayerBySocketId(socket.id);
-            if (!player) {
-                socket.emit('roomVerified', { success: false, playerExists: false });
-                return;
-            }
-
-            console.log(player)
-
-            if (player.roomId === roomId)
-                socket.emit('roomVerified', { success: true, roomExists: true });
-            else
-                console.log('not yet here')
+            const player = new Player(socket, nickname, roomId)
         });
 
         socket.on('disconnect', () => {

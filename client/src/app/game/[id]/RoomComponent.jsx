@@ -7,10 +7,23 @@ import { redirect } from "next/navigation";
 const RoomComponent = ({id}) => {
     const { socket } = useSocket();
     const [verified, setVerified] = useState(false);
+    const [localStorageChecked, setLocalStorageChecked] = useState(false);
+    const [nickname, setNickname] = useState('');
 
     useEffect(() => {
-        if (socket) {
-            socket.emit('verifyRoom', { roomId: id });
+        if (typeof window !== 'undefined') {
+            const storedNickname = localStorage.getItem('nickname');
+            console.log("nickname:", storedNickname);
+            if (!storedNickname)
+                redirect('/game');
+            setNickname(storedNickname);
+            setLocalStorageChecked(true);
+        }
+    }, [])
+
+    useEffect(() => {
+        if (socket && localStorageChecked) {
+            socket.emit('verifyRoom', { roomId: id, nickname: nickname });
 
             // Listen for the response from the server
             socket.on('roomVerified', (response) => {
@@ -26,12 +39,15 @@ const RoomComponent = ({id}) => {
                 socket.off('roomVerified');
             };
         }
-    }, [socket, id]); // Re-run the effect if `socket` or `id` changes
+    }, [socket, id, localStorageChecked]);
 
     return (
-
         <div>
-            <h1>Room {id}</h1>
+        {verified ? 
+            <h1>It's verified!</h1> 
+            : 
+            <h1>Checking for Room {id}</h1>
+        }
         </div>
     )
 }

@@ -2,7 +2,7 @@ import { Room } from './Room.js';
 import { Player } from './Player.js';
 import { uid } from '../utils.js';
 
-export class GameManager {
+class GameManager {
     constructor() {
         this.rooms = new Map();
         this.players = new Map();
@@ -64,3 +64,5 @@ export class GameManager {
     }
 
 }
+
+export const gameManager = new GameManager();

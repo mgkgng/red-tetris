@@ -2,10 +2,10 @@
   "name": "server",
   "version": "1.0.0",
   "description": "https://github.com/mgkgng/red-tetris",
-  "main": "index.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "nodemon server.js",
     "test": "jest --verbose --detectOpenHandles"
   },
   "repository": {
@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/mgkgng/red-tetris#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "nodemon": "^3.0.2",
     "socket.io": "^4.7.3"
