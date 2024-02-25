@@ -47,8 +47,7 @@ export const verifyRoom = (req, res) => {
                 id: player.id,
                 nickname: player.nickname
             })),
-            host: gameManager.getPlayerBySocketId(room.host).nickname
+            host: room.host
          });
-
     }
 }

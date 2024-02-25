@@ -19,7 +19,7 @@
 
         const room = gameManager.getRoom(room_id);
         if (!room) {
-            socket.emit('roomConnection', { success: false })
+            // socket.emit('roomConnection', { success: false })
             return;
         }
         room.addPlayer(socket.id, player);

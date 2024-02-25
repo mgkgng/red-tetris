@@ -65,11 +65,11 @@ const Page = ({params}) => {
     return (
         <div>
         {roomVerified ?
-            <div class="flex gap-5">
-                <PlayerList socket={socket} 
+            <div className="flex gap-5">
+                <TetrisGame socket={socket} 
                     players={players} setPlayers={setPlayers}
-                    hostId={hostId} setHostId={setHostId} />
-                <TetrisGame socket={socket} />
+                    hostId={hostId} setHostId={setHostId}
+                />
             </div>
             :
             <div className="text-white">{roomStateMessage}</div>

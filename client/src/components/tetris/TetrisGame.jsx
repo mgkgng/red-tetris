@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './page.module.css';
 import { TETRIS_BLOCK_SIZE, TETRIS_COLS, TETRIS_ROWS, SHAPES, TETRIS_SHAPES } from '@/constants.js';
 import Button from '@/components/Button.jsx';
+import PlayerList from '../PlayerList.jsx';
 
 const BLOCK_COLORS = {
 	0: 'transparent',
@@ -16,34 +17,68 @@ const BLOCK_COLORS = {
 	7: 'red',
 };
 
-const TetrisGame = ({ socket }) => {
-	const [grid, setGrid] = useState(Array.from({ length: TETRIS_ROWS }, () => new Array(TETRIS_COLS).fill(0)));
+function createEmptyGrid() { return Array.from({ length: TETRIS_ROWS }, () => new Array(TETRIS_COLS).fill(0)); }
+
+const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
+	const [myGrid, setMyGrid] = useState(createEmptyGrid());
+	const [othersGrid, setOthersGrid] = useState(initOthersGrid());
+
 	const acceleartingRef = useRef(false);
-	const updateGrid = useCallback((newGridData) => {
-		setGrid(newGridData);
-	}, []);
+	
+	function initGame() {
+		setMyGrid(createEmptyGrid());
+		initOthersGrid();
+	}
+
+	function initOthersGrid() {
+		const newMap = new Map();
+		players.forEach(player => {
+			newMap.set(player.id, createEmptyGrid());
+		});
+		return newMap;
+	}
+
+	function updateOthersGrid(id, grid) {
+		setOthersGrid(prev => {
+			const newMap = new Map(prev);
+			newMap.set(id, grid);
+			return newMap;
+		})
+	}
+
+	function addNewOtherGrid(id) {
+		setOthersGrid(prev => {
+			const newMap = new Map(prev);
+			newMap.set(id, createEmptyGrid());
+			return newMap;
+		})
+	}
+
+	function deleteFromOtherGrid(id) {
+		setOthersGrid(prev => {
+			const newMap = new Map(prev);
+			newMap.delete(id);
+			return newMap;
+		})
+	}
 
 	const [gameStarted, setGameStarted] = useState(false);
 
 	useEffect(() => {
 		if (!socket) return;
 
-		socket.on('roomConnection', (data) => {
-			console.log('roomConnection', data);
-		})
-
 		socket.on('gameStarted', (data) => {
 			console.log('gameStarted', data);
-			setGrid(Array.from({ length: TETRIS_ROWS }, () => new Array(TETRIS_COLS).fill(0)));
+			initGame();
 			setGameStarted(true);
 		})
 
-		socket.on('updateHost', (data) => {
-			console.log('updateHost', data);
-		})
-
 		socket.on('gameStateUpdate', (data) => {
-			updateGrid(data);
+			if (data.id === socket.id) {
+				setMyGrid(data.grid);
+			} else {
+				updateOthersGrid(data.id, data.grid);
+			}
 		})
 
 		socket.on('nextPiece', (data) => {
@@ -63,6 +98,27 @@ const TetrisGame = ({ socket }) => {
 			console.log('rowsCleared', data);
 		})
 
+		socket.on('updateHost', (data) => {
+            console.log('updateHost', data);
+            setHostId(data.id);
+        });
+
+		socket.on('playerJoined', (data) => {
+            setPlayers(prev => [...prev, data]);
+			if (data.id === socket.id)
+				return;
+			addNewOtherGrid(data.id);
+		})
+
+		socket.on('playerLeft', (data) => {
+            setPlayers(prev => prev.filter(player => player.id !== data.id));
+
+			if (!gameStarted)
+				deleteGame(data.id);
+			else
+				console.log('playerLeft', data);
+		})
+
 		return () => {
 			socket.off('startTetrisTest');
 			socket.off('nextPiece');
@@ -70,6 +126,9 @@ const TetrisGame = ({ socket }) => {
 			socket.off('gameOver');
 			socket.off('gameEnd');
 			socket.off('rowsCleared');
+			socket.off('playerJoined');
+			socket.off('playerLeft');
+			socket.off('updateHost');
 		};
 	}, [socket]);
 
@@ -105,26 +164,50 @@ const TetrisGame = ({ socket }) => {
 	}, [socket]);
 
   return (
-	<div>
-		<div className={styles.tetrisGrid}>
-			{grid.map((row, rowIndex) => (
-				<div key={rowIndex} className={styles.row}>
-				{row.map((cell, cellIndex) => (
-					<div
-						key={cellIndex}
-						className={`${styles.cell}  ${cell ? 'filled' : ''}`}
-						style={{ backgroundColor: BLOCK_COLORS[cell % 8] }}
-					></div>
+	<>
+		<PlayerList players={players} hostId={hostId} socketId={socket?.id}/>
+		<div className="myGame">
+			<div className={styles.tetrisGrid}>
+				{myGrid.map((row, rowIndex) => (
+					<div key={rowIndex} className={styles.row}>
+					{row.map((cell, cellIndex) => (
+						<div
+							key={cellIndex}
+							className={`${styles.cell}  ${cell ? 'filled' : ''}`}
+							style={{ backgroundColor: BLOCK_COLORS[cell % 8] }}
+						></div>
+					))}
+					</div>
 				))}
+			</div>
+			{!gameStarted && hostId === socket?.id &&
+			<Button onClick={() => socket?.emit('startGame')}
+				className="p-3 text-white bg-red-700"
+			>start game</Button>
+			}
+		</div>
+		<div className="othersGame flex gap-2">
+			{Array.from(othersGrid.entries()).map(([playerId, grid], index) => (
+			<div key={playerId}>
+				<div className={styles.othersTetrisGrid}>
+					{grid.map((row, rowIndex) => (
+					<div key={rowIndex} className={styles.othersRow}>
+						{row.map((cell, cellIndex) => (
+						<div
+							key={cellIndex}
+							className={`${styles.cell} ${cell ? 'filled' : ''}`}
+							style={{ backgroundColor: BLOCK_COLORS[cell % 8] }}
+						></div>
+						))}
+					</div>
+					))}
 				</div>
+			</div>
 			))}
 		</div>
-		{!gameStarted &&
-		<Button onClick={() => socket?.emit('startGame')}
-			className="p-3 text-white bg-red-700"
-		>start game</Button>
-		}
-	</div>
+		
+
+	</>
   );
 }
 

@@ -16,7 +16,10 @@ export class Player {
     }
 
     sendGameState() {
-        this.room && this.room.broadcast('gameStateUpdate', this.game.grid);
+        this.room && this.room.broadcast('gameStateUpdate', {
+            id: this.socket.id,
+            grid: this.game.grid
+        });
     }
 
     startGameLoop(room=null) {

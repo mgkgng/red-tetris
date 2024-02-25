@@ -1,4 +1,5 @@
 .title {
+    @apply text-white;
     font-family: Gota;
     font-size: 4rem;
 }

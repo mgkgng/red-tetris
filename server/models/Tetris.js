@@ -39,27 +39,6 @@ export class Tetris {
 		return grid;
 	}
 
-    gameLoop() {
-        clearInterval(this.intervalId);
-        this.intervalId = setInterval(() => {
-            if (!this.moveDown()) {
-                this.fixPiece();
-                let fullRows = this.clearFullRows();
-                if (fullRows.length > 0) {
-                    this.afterClearRows(fullRows);
-                    return;
-                }
-                this.gameBoard.updatePiece();
-                this.socket?.emit('nextPiece', this.gameBoard.nextPiece.shape);
-                if (this.gameBoard.checkGameOver()) {
-                    this.socket && this.socket.emit('gameOver');
-                    return;
-                }
-            }
-        this.sendGameState();
-        }, this.gameBoard.dropInterval);
-    }
-
 	clearFullRows() {
 		let fullRows = [];
 		this.grid.forEach((row, index) => {
