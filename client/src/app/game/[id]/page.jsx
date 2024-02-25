@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import TetrisGame from "@/components/tetris/TetrisGame";
-import PlayerList from "@/components/PlayerList";
 import io from 'socket.io-client';
 
 const Page = ({params}) => {
@@ -23,6 +22,7 @@ const Page = ({params}) => {
                 redirect('/game');
             setNickname(storedNickname);
             setLocalStorageChecked(true);
+            localStorage.removeItem('nickname');
         }
     }, [])
 
@@ -39,7 +39,7 @@ const Page = ({params}) => {
                 }
     
                 const data = await response.json();
-                console.log(data)
+                console.log("first data received:", data)
                 setPlayers(data.players);
                 setHostId(data.host);
                 setRoomVerified(true);

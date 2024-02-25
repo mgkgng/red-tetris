@@ -49,6 +49,12 @@ export class Room {
     }
 
     removePlayer(socketId) {
+        const player = this.players.get(socketId);
+        clearInterval(player.game.intervalId);
+        player.game.gameOver = true;
+        this.broadcast('gameOver', player.socket.id);
+        this.checkGameEnd();
+
         this.players.delete(socketId);
         if (this.players.size === 0)
             return false;

@@ -24,7 +24,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 	const [othersGrid, setOthersGrid] = useState(initOthersGrid());
 
 	const acceleartingRef = useRef(false);
-	
+
 	function initGame() {
 		setMyGrid(createEmptyGrid());
 		initOthersGrid();
@@ -112,9 +112,9 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 
 		socket.on('playerLeft', (data) => {
             setPlayers(prev => prev.filter(player => player.id !== data.id));
-
+			
 			if (!gameStarted)
-				deleteGame(data.id);
+				deleteFromOtherGrid(data.id);
 			else
 				console.log('playerLeft', data);
 		})

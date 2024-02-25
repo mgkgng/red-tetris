@@ -103,6 +103,7 @@ const Page = () => {
 			</div>}
 			{gameState === GAME_STATES.GAME_LIST &&
 			<div className="flex flex-col gap-2">
+				<Button className="p-3 bg-yellow-200 text-white" onClick={() => fetchGameList()}>Refresh</Button>
 				<Button className="p-3 text-white bg-green-700"
 					onClick={() => {
 						setGameState(GAME_STATES.CREATE)

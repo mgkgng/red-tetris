@@ -82,6 +82,7 @@
             console.log('User disconnected:', socket.id);
             const player = gameManager.getPlayerBySocketId(socket.id);
             player && gameManager.removePlayerFromRoom(socket.id, player.roomId);
+            gameManager.players.delete(socket.id);
         });
 
     });
