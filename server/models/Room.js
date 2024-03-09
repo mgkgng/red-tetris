@@ -66,6 +66,9 @@ export class Room {
     checkGameEnd() {
         let playersAlive = [...this.players.values()].filter(player => !player.game.gameOver);
         if (playersAlive.length < 2) {
+            for (let playerAlive of playersAlive) {
+                clearInterval(playerAlive.game.intervalId);
+            }
             this.playing = false;
             this.broadcast('gameEnd', {
                 winner: playersAlive.length ? playersAlive[0].socket.id : null

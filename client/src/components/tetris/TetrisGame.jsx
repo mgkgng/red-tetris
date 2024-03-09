@@ -22,6 +22,7 @@ function createEmptyGrid() { return Array.from({ length: TETRIS_ROWS }, () => ne
 const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 	const [myGrid, setMyGrid] = useState(createEmptyGrid());
 	const [othersGrid, setOthersGrid] = useState(initOthersGrid());
+	const [gameOverSet, setGameOverSet] = useState(new Set());
 
 	const acceleartingRef = useRef(false);
 
@@ -87,6 +88,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 
 		socket.on('gameOver', (data) => {
 			console.log('gameOver', data);
+			setGameOverSet(prev => new Set([...prev, data]));
 		})
 
 		socket.on('gameEnd', ({winner}) => {
@@ -108,7 +110,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 			if (data.id === socket.id)
 				return;
 			addNewOtherGrid(data.id);
-		})
+		});
 
 		socket.on('playerLeft', (data) => {
             setPlayers(prev => prev.filter(player => player.id !== data.id));
@@ -117,7 +119,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 				deleteFromOtherGrid(data.id);
 			else
 				console.log('playerLeft', data);
-		})
+		});
 
 		return () => {
 			socket.off('startTetrisTest');
@@ -174,7 +176,13 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 						<div
 							key={cellIndex}
 							className={`${styles.cell}  ${cell ? 'filled' : ''}`}
-							style={{ backgroundColor: BLOCK_COLORS[cell % 8] }}
+							style={
+								(!gameOverSet.has(socket?.id)) 
+								? { backgroundColor: BLOCK_COLORS[cell % 8] }
+								: (cell) 
+								? { backgroundColor: 'rgba(156, 156, 156)' }
+								: { backgroundColor: 'rgba(64, 64, 64)' }
+							}
 						></div>
 					))}
 					</div>
@@ -196,7 +204,13 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 						<div
 							key={cellIndex}
 							className={`${styles.cell} ${cell ? 'filled' : ''}`}
-							style={{ backgroundColor: BLOCK_COLORS[cell % 8] }}
+							style={
+								(!gameOverSet.has(playerId)) 
+								? { backgroundColor: BLOCK_COLORS[cell % 8] }
+								: (cell) 
+								? { backgroundColor: 'rgba(156, 156, 156)' }
+								: { backgroundColor: 'rgba(64, 64, 64)' }
+							}
 						></div>
 						))}
 					</div>
