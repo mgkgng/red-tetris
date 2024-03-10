@@ -7,12 +7,12 @@
 .othersTetrisGrid {
 	@apply bg-slate-900;
 	display: grid;
-	grid-template-rows: repeat(20, 12px); /* 20 rows, each 30px high */
+	grid-template-rows: repeat(20, 12px);
 }
 
 .othersRow {
 	@apply rounded-xl;
-	grid-template-columns: repeat(10, 12px); /* 10 columns, each 30px wide */
+	grid-template-columns: repeat(10, 12px);
 	display: grid;
 }
 

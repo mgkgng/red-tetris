@@ -2,6 +2,7 @@ import { Tetromino } from './Tetromino.js';
 import { BOARD_ROWS, BOARD_COLS } from '../constants.js';
 
 const FIX_OFFSET = 8;
+const MALUS = 255;
 
 export class Tetris {
 	constructor() {
@@ -53,6 +54,27 @@ export class Tetris {
 		}
 		this.grid = newGrid;
 		return fullRows;
+	}
+
+	addMalus(rowsNb) {	
+		let newGrid = this.grid.slice(rowsNb);
+		for (let i = 0; i < rowsNb; i++) {
+			const malusRow = new Array(this.cols).fill(MALUS);
+	
+			const gapIndex = Math.floor(Math.random() * this.cols);
+			malusRow[gapIndex] = 0;
+	
+			newGrid.push(malusRow);
+		}
+		this.grid = newGrid;
+		this.currentPos.row -= rowsNb;
+
+		if (this.checkGameOver()) {
+			clearInterval(this.intervalId);
+			this.gameOver = true;
+			return false;
+		}
+		return true;
 	}
 
 	placeCurrentPieceOnGrid() {

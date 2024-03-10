@@ -31,7 +31,8 @@ export class Player {
                 this.game.fixPiece();
                 let fullRows = this.game.clearFullRows();
                 if (fullRows.length > 0) {
-                    this.afterClearRows(fullRows);
+                    this.sendGameState();
+                    this.room.addMalusToPlayers(fullRows.length, this.socket.id);
                     return;
                 }
                 this.game.updatePiece();
@@ -44,19 +45,6 @@ export class Player {
             }
             this.sendGameState();
         }, this.game.dropInterval);
-    }
-
-    afterClearRows(fullRows) {
-        this.sendGameState();
-        this.socket?.emit('rowsCleared', fullRows);
-        this.game.controlDisabled = true;
-        clearInterval(this.game.intervalId);
-        setTimeout(() => {
-            this.game.updatePiece();
-            this.socket?.emit('nextPiece', this.game.nextPiece.shape);
-            this.startGameLoop();
-            this.game.controlDisabled = false;
-        }, 500);
     }
 
     moveDown() {
@@ -140,7 +128,8 @@ export class Player {
         this.game.fixPiece();
         let fullRows = this.game.clearFullRows();
         if (fullRows.length > 0) {
-            this.afterClearRows(fullRows);
+            this.sendGameState();
+            this.room.addMalusToPlayers(fullRows.length, this.socket.id);
             return false;
         }
         this.game.updatePiece();

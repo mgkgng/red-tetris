@@ -48,6 +48,19 @@ export class Room {
             player.startGameLoop(this);
     }
 
+    addMalusToPlayers(rowsNb, socketId) {
+        for (let player of this.players.values()) {
+            if (player.socket.id === socketId) continue;
+            console.log('hello its here', socketId, player.socket.id);
+            const res = player.game.addMalus(rowsNb);
+            player.sendGameState();
+            if (!res) {
+                this.broadcast('gameOver', player.socket.id);
+                this.checkGameEnd();
+            }
+        }
+    }
+
     removePlayer(socketId) {
         const player = this.players.get(socketId);
         clearInterval(player.game.intervalId);

@@ -6,6 +6,8 @@ import { TETRIS_BLOCK_SIZE, TETRIS_COLS, TETRIS_ROWS, SHAPES, TETRIS_SHAPES } fr
 import Button from '@/components/Button.jsx';
 import PlayerList from '../PlayerList.jsx';
 
+const MALUS = 255;
+
 const BLOCK_COLORS = {
 	0: 'transparent',
 	1: 'cyan',
@@ -23,10 +25,13 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 	const [myGrid, setMyGrid] = useState(createEmptyGrid());
 	const [othersGrid, setOthersGrid] = useState(initOthersGrid());
 	const [gameOverSet, setGameOverSet] = useState(new Set());
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [gameResultMessage, setGameResultMessage] = useState('');	
 
 	const acceleartingRef = useRef(false);
 
 	function initGame() {
+		setGameOverSet(new Set());
 		setMyGrid(createEmptyGrid());
 		initOthersGrid();
 	}
@@ -178,7 +183,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 							className={`${styles.cell}  ${cell ? 'filled' : ''}`}
 							style={
 								(!gameOverSet.has(socket?.id)) 
-								? { backgroundColor: BLOCK_COLORS[cell % 8] }
+								? { backgroundColor: cell == MALUS ? 'rgb(200, 48, 6)' : BLOCK_COLORS[cell % 8] }
 								: (cell) 
 								? { backgroundColor: 'rgba(156, 156, 156)' }
 								: { backgroundColor: 'rgba(64, 64, 64)' }
@@ -206,7 +211,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 							className={`${styles.cell} ${cell ? 'filled' : ''}`}
 							style={
 								(!gameOverSet.has(playerId)) 
-								? { backgroundColor: BLOCK_COLORS[cell % 8] }
+								? { backgroundColor: cell == MALUS ? 'rgb(200, 48, 6)' : BLOCK_COLORS[cell % 8] }
 								: (cell) 
 								? { backgroundColor: 'rgba(156, 156, 156)' }
 								: { backgroundColor: 'rgba(64, 64, 64)' }
