@@ -42,8 +42,11 @@ const Page = () => {
 				body: JSON.stringify({ roomId }),
 			});
 		
-			if (!response.ok)
-				throw new Error(response.message);
+			if (!response.ok) {
+				// throw new Error(response.message);
+				// TODO join room error
+				return;
+			}
 		
 			const data = await response.json();
 			console.log(data);
@@ -63,8 +66,11 @@ const Page = () => {
 				body: JSON.stringify({ titleEmojis: [emoji1, emoji2, emoji3]}),
 			});
 
-			if (!response.ok)
-				throw new Error(response.message);
+			if (!response.ok) {
+				// throw new Error(response.message);
+				// TODO
+				return ;
+			}
 
 			const data = await response.json();
 			console.log(data);

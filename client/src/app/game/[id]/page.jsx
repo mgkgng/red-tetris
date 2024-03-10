@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import TetrisGame from "@/components/tetris/TetrisGame";
 import io from 'socket.io-client';
+import { Button, Modal } from 'flowbite-react';
 
 const Page = ({params}) => {
     const [socket, setSocket] = useState(null);
@@ -13,6 +14,8 @@ const Page = ({params}) => {
     const [roomStateMessage, setRoomStateMessage] = useState('loading...');
     const [players, setPlayers] = useState([]);
     const [hostId, setHostId] = useState(null);
+    const [winnerId, setWinnerId] = useState(null);
+    const [openModal, setOpenModal] = useState(false);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -62,8 +65,21 @@ const Page = ({params}) => {
         };
     }, [roomVerified]);
 
+    useEffect(() => {
+        if (!socket) return ;
+
+        socket.on('gameEnd', ({winner}) => {
+            setOpenModal(true);
+            winner && setWinnerId(winner);
+        })
+
+        return (() => {
+            socket.off('gameEnd');
+        });
+    }, [socket])
+
     return (
-        <div>
+        <div className="relative">
         {roomVerified ?
             <div className="flex gap-5">
                 <TetrisGame socket={socket} 
@@ -74,6 +90,20 @@ const Page = ({params}) => {
             :
             <div className="text-white">{roomStateMessage}</div>
         }
+        <Modal show={openModal} onClose={() => setOpenModal(false)}>
+            <Modal.Body className="modal1">
+            <div className="text-center modal2">
+                <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                The winner is <b>{players.find(player => player.id === winnerId)?.nickname}</b>
+                </h3>
+                <div className="flex justify-center gap-4">
+                <Button color="gray" onClick={() => setOpenModal(false)}>
+                    Go Back
+                </Button>
+                </div>
+            </div>
+            </Modal.Body>
+        </Modal>
         </div>
     )
 }
