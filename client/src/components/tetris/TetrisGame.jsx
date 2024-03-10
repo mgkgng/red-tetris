@@ -24,6 +24,7 @@ function createEmptyGrid() { return Array.from({ length: TETRIS_ROWS }, () => ne
 const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 	const [myGrid, setMyGrid] = useState(createEmptyGrid());
 	const [othersGrid, setOthersGrid] = useState(initOthersGrid());
+	const [gameStarted, setGameStarted] = useState(false);
 	const [gameOverSet, setGameOverSet] = useState(new Set());
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [gameResultMessage, setGameResultMessage] = useState('');	
@@ -31,6 +32,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 	const acceleartingRef = useRef(false);
 
 	function initGame() {
+		setGameStarted(true);
 		setGameOverSet(new Set());
 		setMyGrid(createEmptyGrid());
 		initOthersGrid();
@@ -68,15 +70,12 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 		})
 	}
 
-	const [gameStarted, setGameStarted] = useState(false);
-
 	useEffect(() => {
 		if (!socket) return;
 
 		socket.on('gameStarted', (data) => {
 			console.log('gameStarted', data);
 			initGame();
-			setGameStarted(true);
 		})
 
 		socket.on('gameStateUpdate', (data) => {
@@ -110,6 +109,10 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
             setHostId(data.id);
         });
 
+		socket.on('levelUp', (data) => {
+			console.log('levelUp', data);
+		})
+
 		socket.on('playerJoined', (data) => {
             setPlayers(prev => [...prev, data]);
 			if (data.id === socket.id)
@@ -140,18 +143,20 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 	}, [socket]);
 
 	function handleKeyPress(e) {
+		console.log('wtf?', gameStarted);
+		if (!gameStarted) return;
 		if (e.key === "ArrowLeft") {
-			socket?.emit('moveBlock', { left: true });
+			socket.emit('moveBlock', { left: true });
 		} else if (e.key === "ArrowRight") {
-			socket?.emit('moveBlock', { left: false });
+			socket.emit('moveBlock', { left: false });
 		} else if (e.key === "ArrowUp") {
-			socket?.emit('rotateBlock');
+			socket.emit('rotateBlock');
 		} else if (e.key === "ArrowDown") {
 			if (acceleartingRef.current) return;
-			socket?.emit('startAccelerate');
+			socket.emit('startAccelerate');
 			acceleartingRef.current = true;
 		} else if (e.key === " ") {
-			socket?.emit('hardDrop');
+			socket.emit('hardDrop');
 		}
 	}
 
@@ -168,7 +173,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 		window.addEventListener('keydown', handleKeyPress);
 		window.addEventListener('keyup', handleKeyUp)
 		return () => window.removeEventListener('keydown', handleKeyPress);
-	}, [socket]);
+	}, [socket, gameStarted]);
 
   return (
 	<>

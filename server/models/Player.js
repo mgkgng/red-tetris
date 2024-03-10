@@ -2,13 +2,15 @@ import { TETROMINO_CODES } from '../constants.js';
 import { Tetris } from './Tetris.js';
 
 export class Player {
-    constructor(socket, name, roomId, pieceSeries) {
+    constructor(socket, name, roomId) {
         this.socket = socket;
         this.name = name;
         this.score = 0;
         this.game = null;
         this.roomId = roomId;
         this.room = null;
+        this.score = 0;
+        this.playing = false; // TODO protection from the back
     }
 
     initTetris(series) {
@@ -27,28 +29,15 @@ export class Player {
             this.room = room;
         clearInterval(this.game.intervalId);
         this.game.intervalId = setInterval(() => {
-            if (!this.moveDown()) {
-                this.game.fixPiece();
-                let fullRows = this.game.clearFullRows();
-                if (fullRows.length > 0) {
-                    this.sendGameState();
-                    this.room.addMalusToPlayers(fullRows.length, this.socket.id);
-                    return;
-                }
-                this.game.updatePiece();
-                this.socket?.emit('nextPiece', this.game.nextPiece.shape);
-                if (this.game.checkGameOver()) {
-                    this.room.broadcast('gameOver', this.socket.id);
-                    this.room.checkGameEnd();
-                    return;
-                }
-            }
-            this.sendGameState();
+            let shouldSend = true;
+            if (!this.moveDown())
+                shouldSend = this.afterDropped();
+            shouldSend && this.sendGameState();
         }, this.game.dropInterval);
     }
 
     moveDown() {
-        if (this.game.gameOver || this.game.controlDisabled) return false;
+        if (this.game.gameOver) return false;
 
         const { row, col } = this.game.currentPos;
         const positions = this.game.currentPiece.getEntirePosition(row + 1, col);
@@ -66,7 +55,7 @@ export class Player {
     }
 
     moveSide(left) {
-        if (this.game.gameOver || this.game.controlDisabled) return false;
+        if (this.game.gameOver) return false;
 
         const { row, col } = this.game.currentPos;
         const positions = this.game.currentPiece.getEntirePosition(row, col + (left ? -1 : 1));
@@ -84,7 +73,7 @@ export class Player {
     }
 
     rotate() {
-        if (this.game.gameOver || this.game.controlDisabled) return false;
+        if (this.game.gameOver) return false;
 
         if (this.game.currentPiece.shape === TETROMINO_CODES.O) return true;
 
@@ -121,24 +110,32 @@ export class Player {
         return false;
     }
 
-    hardDrop() {
-        if (this.game.gameOver || this.game.controlDisabled) return false;
-
-        while (this.moveDown());
+    afterDropped() {
         this.game.fixPiece();
         let fullRows = this.game.clearFullRows();
         if (fullRows.length > 0) {
             this.sendGameState();
+            this.game.currentPos = { row: 0, col: 3 };
             this.room.addMalusToPlayers(fullRows.length, this.socket.id);
+            this.room.afterClearLines(fullRows.length);
+            this.startGameLoop();
             return false;
         }
         this.game.updatePiece();
         this.socket?.emit('nextPiece', this.game.nextPiece.shape);
         if (this.game.checkGameOver()) {
+            this.sendGameState();
             this.room.broadcast('gameOver', this.socket.id);
             this.room.checkGameEnd();
-            return;
+            return false;
         }
         return true;
+    }
+
+    hardDrop() {
+        if (this.game.gameOver) return false;
+
+        while (this.moveDown());
+        return this.afterDropped();
     }
 }

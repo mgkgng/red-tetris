@@ -1,3 +1,7 @@
+import { TetrisFrames } from '../constants.js';
+
+const LINES_TO_LEVEL_UP = 2;
+
 export class Room {
     constructor(uid, titleEmojis) {
         this.titleEmojis = titleEmojis;
@@ -7,7 +11,8 @@ export class Room {
         this.joinedPlayer = [];
         this.host = null;
         this.uid = uid;
-        this.level = 1; // TODO bonus
+        this.level = 0;
+        this.clearedLines = 0;
     }
 
     broadcast(event, data) {
@@ -87,6 +92,18 @@ export class Room {
                 winner: playersAlive.length ? playersAlive[0].socket.id : null
             });
         }
+    }
+
+    afterClearLines(linesNb) {
+        this.clearedLines += linesNb;
+        if (this.clearedLines < LINES_TO_LEVEL_UP * this.players.size) return;
+        this.clearedLines -= LINES_TO_LEVEL_UP * this.players.size;
+        this.level++;
+        for (let player of this.players.values()) {
+            player.game.dropInterval = (this.level < TetrisFrames.length ? TetrisFrames[this.level] : 1) * 1000 / 60
+            player.startGameLoop();
+        }
+        this.broadcast('levelUp', this.level);
     }
 
     generateTetrominoSeries() {

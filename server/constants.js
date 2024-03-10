@@ -66,3 +66,14 @@ export const TETROMINO_ROTATIONS = [
         [[-1, -1], [0, -1], [0, 0], [1, 0]],
     ]
 ]
+
+export const TetrisScores = {
+    1: 40,
+    2: 100,
+    3: 300,
+    4: 1200
+}
+
+export const TetrisFrames = [
+    48, 43, 38, 33, 28, 23, 18, 13, 8, 6, 5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2
+]

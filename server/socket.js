@@ -35,7 +35,7 @@
         socket.on('moveBlock', ({left}) => {
             const player = gameManager.getPlayerBySocketId(socket.id);
             if (player) {
-                if (player.game.gameOver || player.game.controlDisabled) return;
+                if (player.game.gameOver) return;
                 player.moveSide(left);
                 player.sendGameState();
             }
@@ -44,7 +44,7 @@
         socket.on('rotateBlock', () => {
             const player = gameManager.getPlayerBySocketId(socket.id);
             if (player) {
-                if (player.game.gameOver || player.game.controlDisabled) return;
+                if (player.game.gameOver) return;
                 player.rotate() && player.sendGameState();
             }
         })
@@ -52,16 +52,20 @@
         socket.on('hardDrop', () => {
             const player = gameManager.getPlayerBySocketId(socket.id);
             if (player) {
-                if (player.game.gameOver || player.game.controlDisabled) return;
-                player.hardDrop();
-                player.sendGameState();
+                if (player.game.gameOver) return;
+                clearInterval(player.game.intervalId)
+                const res = player.hardDrop()
+                if (res) {
+                    player.sendGameState();
+                    player.startGameLoop();
+                }
             }
         })
 
         socket.on('startAccelerate', () => {
             const player = gameManager.getPlayerBySocketId(socket.id);
             if (player) {
-                if (player.game.gameOver || player.game.controlDisabled || player.game.accelerating) return;
+                if (player.game.gameOver || player.game.accelerating) return;
                 player.game.dropInterval /= 10;
                 player.game.accelerating = true;
                 player.startGameLoop();
@@ -71,7 +75,7 @@
         socket.on('stopAccelerate', () => {
             const player = gameManager.getPlayerBySocketId(socket.id);
             if (player) {
-                if (player.game.gameOver || player.game.controlDisabled || !player.game.accelerating) return;
+                if (player.game.gameOver || !player.game.accelerating) return;
                 player.game.dropInterval *= 10;
                 player.game.accelerating = false;
                 player.startGameLoop();

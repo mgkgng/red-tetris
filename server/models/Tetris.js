@@ -8,6 +8,7 @@ export class Tetris {
 	constructor() {
 		this.rows = BOARD_ROWS;
 		this.cols = BOARD_COLS;
+		this.currentPos = { row: -1, col: Math.floor(BOARD_COLS / 2) };
 	}
 
 	getPieceAtIndex(index) {
@@ -23,7 +24,6 @@ export class Tetris {
 		this.nextPiece = this.getPieceAtIndex(this.pieceIndex + 1);
 		this.currentPos = { row: -1, col: Math.floor(BOARD_COLS / 2) };
 		this.gameOver = false;
-		this.controlDisabled = false;
 		this.accelerating = false;
 		this.dropInterval = 1000;
 	}
