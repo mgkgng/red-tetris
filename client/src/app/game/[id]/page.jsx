@@ -16,6 +16,7 @@ const Page = ({params}) => {
     const [hostId, setHostId] = useState(null);
     const [winnerId, setWinnerId] = useState(null);
     const [openModal, setOpenModal] = useState(false);
+    const [score, setScore] = useState(0);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -72,6 +73,11 @@ const Page = ({params}) => {
             setOpenModal(true);
             winner && setWinnerId(winner);
         })
+
+        socket.on('scoreUpdate', (data) => {
+            console.log('score:', data)
+            setScore(score);
+        });
 
         return (() => {
             socket.off('gameEnd');

@@ -1,4 +1,4 @@
-import { TETROMINO_CODES } from '../constants.js';
+import { TETROMINO_CODES, TetrisScores } from '../constants.js';
 import { Tetris } from './Tetris.js';
 
 export class Player {
@@ -110,15 +110,23 @@ export class Player {
         return false;
     }
 
+    updateScore(linesNb) {
+        console.log('test', linesNb, TetrisScores[linesNb])
+        this.score += TetrisScores[linesNb];
+        this.socket.emit('scoreUpdate', this.score);
+    }
+
     afterDropped() {
         this.game.fixPiece();
         let fullRows = this.game.clearFullRows();
         if (fullRows.length > 0) {
             this.sendGameState();
+            console.log('check', this.room.players.size, this.room.players.size == 1)
+            if (this.room.players.size == 1)
+                this.updateScore(fullRows.length);
             this.game.currentPos = { row: 0, col: 3 };
             this.room.addMalusToPlayers(fullRows.length, this.socket.id);
             this.room.afterClearLines(fullRows.length);
-            this.startGameLoop();
             return false;
         }
         this.game.updatePiece();
