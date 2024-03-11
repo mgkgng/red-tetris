@@ -1,5 +1,6 @@
 import { TETROMINO_CODES, TetrisScores, BOARD_COLS } from '../constants.js';
 import { Tetris } from './Tetris.js';
+import { scoreManager } from './ScoreManager.js';
 
 export class Player {
     constructor(socket, name, roomId) {
@@ -111,9 +112,11 @@ export class Player {
     }
 
     updateScore(linesNb) {
-        console.log('test', linesNb, TetrisScores[linesNb])
         this.score += TetrisScores[linesNb];
-        this.socket.emit('scoreUpdate', this.score);
+        this.room.broadcast('scoreUpdate', {
+            player: this.socket.id,
+            score: this.score
+        });
     }
 
     afterDropped() {
@@ -121,8 +124,7 @@ export class Player {
         let fullRows = this.game.clearFullRows();
         if (fullRows.length > 0) {
             this.sendGameState();
-            if (this.room.players.size == 1)
-                this.updateScore(fullRows.length);
+            this.updateScore(fullRows.length);
             this.game.updatePiece();
             this.room.addMalusToPlayers(fullRows.length, this.socket.id);
             this.room.afterClearLines(fullRows.length);
@@ -133,6 +135,7 @@ export class Player {
         if (this.game.checkGameOver()) {
             this.sendGameState();
             this.room.broadcast('gameOver', this.socket.id);
+            scoreManager.updateScore(this.name, this.score); // TODO effect?
             this.room.checkGameEnd();
             return false;
         }

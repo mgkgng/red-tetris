@@ -1,4 +1,5 @@
 import { TetrisFrames } from '../constants.js';
+import { scoreManager } from './ScoreManager.js';
 
 const LINES_TO_LEVEL_UP = 2;
 
@@ -84,10 +85,13 @@ export class Room {
     checkGameEnd() {
         let playersAlive = [...this.players.values()].filter(player => !player.game.gameOver);
         if (playersAlive.length < 2) {
-            for (let playerAlive of playersAlive) {
-                clearInterval(playerAlive.game.intervalId);
+            if (playersAlive.length === 1) {
+                clearInterval(playersAlive[0].game.intervalId);
+                scoreManager.updateScore(playersAlive[0].name, playersAlive[0].score);
+                console.log('score updated', playersAlive[0].name, playersAlive[0].score);
             }
             this.playing = false;
+
             this.broadcast('gameEnd', {
                 winner: playersAlive.length ? playersAlive[0].socket.id : null
             });
