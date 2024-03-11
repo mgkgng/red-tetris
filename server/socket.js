@@ -54,11 +54,8 @@
             if (player) {
                 if (player.game.gameOver) return;
                 clearInterval(player.game.intervalId)
-                const res = player.hardDrop()
-                if (res) {
-                    player.sendGameState();
-                    player.startGameLoop();
-                }
+                player.hardDrop() && player.sendGameState();
+                player.startGameLoop();
             }
         })
 

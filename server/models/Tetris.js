@@ -1,5 +1,5 @@
 import { Tetromino } from './Tetromino.js';
-import { BOARD_ROWS, BOARD_COLS } from '../constants.js';
+import { BOARD_ROWS, BOARD_COLS, TetrisFrames } from '../constants.js';
 
 const FIX_OFFSET = 8;
 const MALUS = 255;
@@ -15,7 +15,7 @@ export class Tetris {
 		return new Tetromino(this.pieceSeries[(index % this.pieceSeries.length + Math.floor(index / this.pieceSeries.length)) % 7]);
 	}
 
-	initialize(series) {
+	initialize(series, level=0) {
 		this.intervalId = null;
 		this.pieceSeries = series;
 		this.grid = this.initializeGrid(this.rows, this.cols);
@@ -25,7 +25,7 @@ export class Tetris {
 		this.currentPos = { row: -1, col: Math.floor(BOARD_COLS / 2) };
 		this.gameOver = false;
 		this.accelerating = false;
-		this.dropInterval = 1000;
+		this.dropInterval = TetrisFrames[level] * 1000 / 60;
 	}
 
 	initializeGrid(rows, cols) {
