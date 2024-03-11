@@ -9,7 +9,6 @@ export default function Home() {
 	useEffect(() => {
 		width = screen.width;
 		height = screen.height;
-		console.log(`Maximum Screen Width: ${width}, Maximum Screen Height: ${height}`);
 	}, []);
 
 	return (
