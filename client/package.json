@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "animejs": "^3.2.2",
     "emoji-picker-react": "^4.8.0",
     "flowbite-react": "^0.7.2",
     "htmx.org": "^1.9.10",

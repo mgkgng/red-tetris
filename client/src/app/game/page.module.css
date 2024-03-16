@@ -16,5 +16,5 @@
 }
 
 .emojiContainer {
-	@apply text-8xl bg-slate-100 px-3 py-6 rounded-xl cursor-pointer select-none;
+	@apply text-6xl bg-slate-100 px-3 py-6 rounded-xl cursor-pointer select-none;
 }
