@@ -1,29 +1,28 @@
 .tetrisGrid {
-	@apply bg-slate-900;
 	display: grid;
-	grid-template-rows: repeat(20, 32px); /* 20 rows, each 30px high */
-}
-
-.othersTetrisGrid {
-	@apply bg-slate-900;
-	display: grid;
-	grid-template-rows: repeat(20, 12px);
-}
-
-.othersRow {
-	@apply rounded-xl;
-	grid-template-columns: repeat(10, 12px);
-	display: grid;
+	grid-template-rows: repeat(20, 1.6vw); /* 20 rows, each 30px high */
+	gap: 0.35vw;
 }
 
 .row {
 	@apply rounded-xl;
-	grid-template-columns: repeat(10, 32px); /* 10 columns, each 30px wide */
+	grid-template-columns: repeat(10, 1.6vw); /* 10 columns, each 30px wide */
+	display: grid;
+	gap: 0.35vw;
+}
+
+.othersTetrisGrid {
+	display: grid;
+	grid-template-rows: repeat(20, 0.5vw);
+}
+
+.othersRow {
+	@apply rounded-xl;
+	grid-template-columns: repeat(10, 0.5vw);
 	display: grid;
 }
 
+
 .cell {
-	@apply border-2 border-slate-300;
-	border-color: rgba(203, 213, 225, 0.3);
-	/* box-sizing: border-box; */
+	@apply border-1 rounded-full shadow-lg;
 }

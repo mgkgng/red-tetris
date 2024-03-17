@@ -87,7 +87,7 @@ const Page = ({params}) => {
     return (
         <div className="relative">
         {roomVerified ?
-            <div className="flex gap-5">
+            <div className="flex gap-5 h-screen py-5 justify-center items-center">
                 <TetrisGame socket={socket} 
                     players={players} setPlayers={setPlayers}
                     hostId={hostId} setHostId={setHostId}

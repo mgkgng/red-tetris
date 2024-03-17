@@ -1,20 +1,28 @@
-.tetrisGrid {
-	@apply bg-white;
-	display: grid;
-	grid-template-rows: repeat(20, 30px); /* 20 rows, each 30px high */
-}
-
-.row {
-	grid-template-columns: repeat(10, 30px); /* 10 columns, each 30px wide */
-	display: grid;
-}
-
-.cell {
-	@apply border-slate-300;
-	border: 1px solid black;
-	/* box-sizing: border-box; */
-}
-
 .emojiContainer {
 	@apply text-6xl bg-slate-100 px-3 py-6 rounded-xl cursor-pointer select-none;
+}
+
+.nameEmojiContainer {
+	@apply text-7xl bg-gray-100 opacity-95 hover:opacity-100 rounded-md pt-2 cursor-pointer select-none text-center w-28 h-28 flex justify-center items-center;
+}
+
+.accordion {
+	@apply border-none rounded-none rounded-b-none rounded-t-none first:rounded-none focus:ring-0 opacity-80 justify-center items-center;
+	background: none !important;
+	color: white !important;
+}
+
+.accordion:hover {
+	@apply opacity-100;
+	background: none !important;
+}
+
+.accordion:focus {
+	@apply text-white border-none opacity-100;
+	background: none !important;
+}
+
+.accordion:focus:hover {
+	@apply opacity-100;
+	background: none !important;
 }

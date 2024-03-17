@@ -178,31 +178,40 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
   return (
 	<>
 		<PlayerList players={players} hostId={hostId} socketId={socket?.id}/>
-		<div className="myGame">
+		<div className="m-3 relative p-12">
+			{/* Game Header */}
+			<div className="absolute top-0 left-0 text-white h-12 flex">
+				<div className='flex'>
+					<p>Score:</p>
+					<p>1000000000</p>
+				</div>
+				{!gameStarted && hostId === socket?.id &&
+				<Button onClick={() => socket?.emit('startGame')}
+					className=""
+				>start game</Button>
+				}
+			</div>
+			{/* Game Body */}
 			<div className={styles.tetrisGrid}>
 				{myGrid.map((row, rowIndex) => (
 					<div key={rowIndex} className={styles.row}>
 					{row.map((cell, cellIndex) => (
 						<div
 							key={cellIndex}
-							className={`${styles.cell}  ${cell ? 'filled' : ''}`}
+							className={styles.cell}
 							style={
 								(!gameOverSet.has(socket?.id)) 
 								? { backgroundColor: cell == MALUS ? 'rgb(200, 48, 6)' : BLOCK_COLORS[cell % 8] }
 								: (cell) 
 								? { backgroundColor: 'rgba(156, 156, 156)' }
-								: { backgroundColor: 'rgba(64, 64, 64)' }
+								: { backgroundColor: 'rgba(255, 255, 255)' }
 							}
 						></div>
 					))}
 					</div>
 				))}
 			</div>
-			{!gameStarted && hostId === socket?.id &&
-			<Button onClick={() => socket?.emit('startGame')}
-				className="p-3 text-white bg-red-700"
-			>start game</Button>
-			}
+			
 		</div>
 		<div className="othersGame flex gap-2">
 			{Array.from(othersGrid.entries()).map(([playerId, grid], index) => (
@@ -219,7 +228,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 								? { backgroundColor: cell == MALUS ? 'rgb(200, 48, 6)' : BLOCK_COLORS[cell % 8] }
 								: (cell) 
 								? { backgroundColor: 'rgba(156, 156, 156)' }
-								: { backgroundColor: 'rgba(64, 64, 64)' }
+								: { backgroundColor: 'rgba(164, 164, 164)' }
 							}
 						></div>
 						))}

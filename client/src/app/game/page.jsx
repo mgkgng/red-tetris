@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import TetrisGame from '@/components/tetris/TetrisGame.jsx';
 import Button from '@/components/Button.jsx';
 import Picker from "emoji-picker-react";
 import styles from './page.module.css';
 import anime from 'animejs';
+import { Accordion } from 'flowbite-react';
 
 // TODO set waiting state
 const GAME_STATES = {
@@ -20,6 +20,7 @@ const Page = () => {
 	const [nickname, setNickname] = useState('');
 	const [gameList, setGameList] = useState([]);
 	const [gameListLoading, setGameListLoading] = useState(false);
+	const [nameEmoji, setNameEmoji] = useState('🙂');
 	const [emoji1, setEmoji1] = useState('🐥');
 	const [emoji2, setEmoji2] = useState('🐥');
 	const [emoji3, setEmoji3] = useState('🐥');
@@ -109,17 +110,39 @@ const Page = () => {
 		}
 	}
 
+	function onEmojiClick(event, emojiObject) {
+		setNameEmoji(event.emoji);
+	}
+
     return (
-		<div ref={wrapperElemRef}>
+		<div ref={wrapperElemRef} className="w-full h-full flex justify-center items-center">
+
 			{gameState === GAME_STATES.SETUP_NAME && 
 			<div className="flex flex-col gap-1 justify-center items-center p-12">
-				<div>
+				<div className='flex flex-col gap-1 justify-center items-center'>
+					<span className={styles.nameEmojiContainer}>{nameEmoji}</span>
+
+					<Accordion className='border-none hover:bg-none' collapseAll>
+						<Accordion.Panel className={styles.accordion}>
+							<Accordion.Title className={styles.accordion}>Pick My Emoji</Accordion.Title>
+							<Accordion.Content>
+								<Picker
+									onEmojiClick={onEmojiClick} 
+									searchDisabled={true}
+									reactionsDefaultOpen={true}
+									height={400}
+									native
+								/>
+							</Accordion.Content>
+						</Accordion.Panel>
+					</Accordion>
+
 					<input 
 						type="text" 
 						placeholder="Type your nickname"
 						value={nickname} 
 						onChange={(e) => setNickname(e.target.value)}
-						className="h-8 border-2"
+						className="h-8 border-2 focus:border-fuchsia-200"
 					/>
 				</div>
 				<div className="flex gap-2">
