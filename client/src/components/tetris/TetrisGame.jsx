@@ -21,7 +21,13 @@ const BLOCK_COLORS = {
 
 function createEmptyGrid() { return Array.from({ length: TETRIS_ROWS }, () => new Array(TETRIS_COLS).fill(0)); }
 
-const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
+function addSpacePaddingToScore(score) {
+	const scoreStr = score ? score.toString() : '0';
+	const padding = ' '.repeat(9 - scoreStr.length);
+	return padding + scoreStr;
+}
+
+const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, setScores }) => {
 	const [myGrid, setMyGrid] = useState(createEmptyGrid());
 	const [othersGrid, setOthersGrid] = useState(initOthersGrid());
 	const [gameStarted, setGameStarted] = useState(false);
@@ -35,6 +41,11 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 		setGameStarted(true);
 		setGameOverSet(new Set());
 		setMyGrid(createEmptyGrid());
+		setScores(prev => {
+			const newMap = new Map(prev);
+			players.forEach(player => newMap.set(player.id, 0));
+			return newMap;
+		})
 		initOthersGrid();
 	}
 
@@ -115,6 +126,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 
 		socket.on('playerJoined', (data) => {
             setPlayers(prev => [...prev, data]);
+			setScores(prev => new Map(prev.set(data.id, 0)));
 			if (data.id === socket.id)
 				return;
 			addNewOtherGrid(data.id);
@@ -122,7 +134,11 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 
 		socket.on('playerLeft', (data) => {
             setPlayers(prev => prev.filter(player => player.id !== data.id));
-			
+			setScores(prev => {
+				const newMap = new Map(prev);
+				newMap.delete(data.id);
+				return newMap;
+			});
 			if (!gameStarted)
 				deleteFromOtherGrid(data.id);
 			else
@@ -143,7 +159,6 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
 	}, [socket]);
 
 	function handleKeyPress(e) {
-		console.log('wtf?', gameStarted);
 		if (!gameStarted) return;
 		if (e.key === "ArrowLeft") {
 			socket.emit('moveBlock', { left: true });
@@ -178,17 +193,17 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId }) => {
   return (
 	<>
 		<PlayerList players={players} hostId={hostId} socketId={socket?.id}/>
-		<div className="m-3 relative p-12">
+		<div className="m-3 relative p-12 pt-16">
 			{/* Game Header */}
-			<div className="absolute top-0 left-0 text-white h-12 flex">
-				<div className='flex'>
+			<div className="absolute w-full top-0 left-0 text-white h-12 flex justify-between items-center border-sm gap-2">
+				<div className='flex h-8 w-3/5 justify-between items-center border-2 border-white rounded-sm px-2'>
 					<p>Score:</p>
-					<p>1000000000</p>
+					<p>{scores.get(socket?.id)}</p>
 				</div>
 				{!gameStarted && hostId === socket?.id &&
 				<Button onClick={() => socket?.emit('startGame')}
-					className=""
-				>start game</Button>
+					className="text-black bg-white hover:bg-gray-300 px-3 duration-150"
+				>start</Button>
 				}
 			</div>
 			{/* Game Body */}

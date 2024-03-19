@@ -78,6 +78,7 @@ const Page = () => {
 			const data = await response.json();
 			console.log(data);
 			localStorage.setItem('nickname', nickname);
+			localStorage.setItem('emoji', nameEmoji);
 			router.push(`/game/${data.roomId}`);
 			return data;
 			} catch (error) {
@@ -101,8 +102,9 @@ const Page = () => {
 
 			const data = await response.json();
 			console.log(data);
+
 			localStorage.setItem('nickname', nickname);
-			localStorage.setItem('roomId', data.roomId);
+			localStorage.setItem('emoji', nameEmoji);
 			router.push(`/game/${data.roomId}`);
 		} catch (e) {
 			console.error(e);
@@ -122,15 +124,15 @@ const Page = () => {
 				<div className='flex flex-col gap-1 justify-center items-center'>
 					<span className={styles.nameEmojiContainer}>{nameEmoji}</span>
 
-					<Accordion className='border-none hover:bg-none' collapseAll>
-						<Accordion.Panel className={styles.accordion}>
+					<Accordion className='border-none hover:bg-none border-t-0' collapseAll>
+						<Accordion.Panel>
 							<Accordion.Title className={styles.accordion}>Pick My Emoji</Accordion.Title>
-							<Accordion.Content>
+							<Accordion.Content className="focus:border-t-0">
 								<Picker
 									onEmojiClick={onEmojiClick} 
 									searchDisabled={true}
 									reactionsDefaultOpen={true}
-									height={400}
+									height={250}
 									native
 								/>
 							</Accordion.Content>

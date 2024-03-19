@@ -22,7 +22,6 @@
 	display: grid;
 }
 
-
 .cell {
-	@apply border-1 rounded-full shadow-lg;
+	@apply border-1 rounded-full shadow-lg border-opacity-60;
 }

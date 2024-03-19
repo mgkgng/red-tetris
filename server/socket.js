@@ -11,19 +11,18 @@
 
     io.on('connection', (socket) => {
         const nickname = socket.handshake.query.nickname;
-        const room_id = socket.handshake.query.room_id; // TODO can i use it universally since it is initialized for a certain socket connection from here?
-        console.log('client arrived!', socket.id, nickname, room_id);
+        const room_id = socket.handshake.query.room_id;
+        const emoji = socket.handshake.query.emoji;
+        console.log('new client arrived!', socket.id, nickname, room_id, emoji);
         
-        const player = new Player(socket, nickname, room_id);
+        const player = new Player(socket, nickname, room_id, emoji);
         gameManager.players.set(socket.id, player);
 
         const room = gameManager.getRoom(room_id);
-        if (!room) {
-            // socket.emit('roomConnection', { success: false })
-            return;
-        }
+        if (!room) return;
+
         room.addPlayer(socket.id, player);
-        room.broadcast('playerJoined', { id: socket.id, nickname });
+        room.broadcast('playerJoined', { id: socket.id, nickname, emoji });
 
         socket.on('startGame', () => {
             const room = gameManager.getRoom(room_id);

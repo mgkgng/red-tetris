@@ -46,7 +46,8 @@ export const verifyRoom = (req, res) => {
             series: room.series,
             players: [...room.players.values()].map(player => ({
                 id: player.socket.id,
-                nickname: player.name
+                nickname: player.name,
+                emoji: player.emoji
             })),
             host: room.host
          });

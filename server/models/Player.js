@@ -3,9 +3,10 @@ import { Tetris } from './Tetris.js';
 import { scoreManager } from './ScoreManager.js';
 
 export class Player {
-    constructor(socket, name, roomId) {
+    constructor(socket, name, roomId, emoji) {
         this.socket = socket;
         this.name = name;
+        this.emoji = emoji;
         this.score = 0;
         this.game = null;
         this.roomId = roomId;
@@ -135,7 +136,7 @@ export class Player {
         if (this.game.checkGameOver()) {
             this.sendGameState();
             this.room.broadcast('gameOver', this.socket.id);
-            scoreManager.updateScore(this.name, this.score); // TODO effect?
+            scoreManager.updateScore(this.name, this.score);
             this.room.checkGameEnd();
             return false;
         }

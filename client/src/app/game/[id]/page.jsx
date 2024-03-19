@@ -11,22 +11,32 @@ const Page = ({params}) => {
     const [roomVerified, setRoomVerified] = useState(false);
     const [localStorageChecked, setLocalStorageChecked] = useState(false);
     const [nickname, setNickname] = useState('');
+    const [nameEmoji, setNameEmoji] = useState('');
     const [roomStateMessage, setRoomStateMessage] = useState('loading...');
     const [players, setPlayers] = useState([]);
     const [hostId, setHostId] = useState(null);
     const [winnerId, setWinnerId] = useState(null);
     const [openModal, setOpenModal] = useState(false);
-    const [score, setScore] = useState(0);
+    const [scores, setScores] = useState(new Map());
 
+    function initializeScores() {
+        const initialScores = new Map();
+        players.forEach(playerId => { initialScores.set(playerId, 0); });
+        setScores(initialScores);
+    }
+    
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const storedNickname = localStorage.getItem('nickname');
-            console.log("nickname:", storedNickname);
-            if (!storedNickname) // TODO maybe, i can create nickname directly while joining the room via url
+            const storedEmoji = localStorage.getItem('emoji');
+            console.log("player info:", storedNickname, storedEmoji);
+            if (!storedNickname || !storedEmoji)
                 redirect('/game');
             setNickname(storedNickname);
+            setNameEmoji(storedEmoji);
             setLocalStorageChecked(true);
             localStorage.removeItem('nickname');
+            localStorage.removeItem('emoji');
         }
     }, [])
 
@@ -37,7 +47,6 @@ const Page = ({params}) => {
                 const response = await fetch(`http://localhost:3000/api/verify_room/${params.id}`);
                 if (!response.ok) {
                     console.log(response.status)
-                    // throw new Error('Room not found');
                     setRoomStateMessage('Room not found');
                     return;
                 }
@@ -46,6 +55,7 @@ const Page = ({params}) => {
                 console.log("first data received:", data)
                 setPlayers(data.players);
                 setHostId(data.host);
+                initializeScores()
                 setRoomVerified(true);
             } catch (error) {
                 console.error(error);
@@ -55,10 +65,9 @@ const Page = ({params}) => {
         VerifyRoom();
     }, [localStorageChecked]);
 
-
     useEffect(() => {
         if (!roomVerified) return;
-        const newSocket = io(`http://localhost:3000?nickname=${nickname}&room_id=${params.id}`);
+        const newSocket = io(`http://localhost:3000?nickname=${nickname}&room_id=${params.id}&emoji=${nameEmoji}`);
         newSocket && setSocket(newSocket);
 
         return () => {
@@ -75,8 +84,7 @@ const Page = ({params}) => {
         })
 
         socket.on('scoreUpdate', (data) => {
-            console.log('score:', data)
-            setScore(score);
+            setScores(prev => new Map(prev.set(data.player, data.score)));
         });
 
         return (() => {
@@ -91,6 +99,7 @@ const Page = ({params}) => {
                 <TetrisGame socket={socket} 
                     players={players} setPlayers={setPlayers}
                     hostId={hostId} setHostId={setHostId}
+                    scores={scores} setScores={setScores}
                 />
             </div>
             :
@@ -98,7 +107,7 @@ const Page = ({params}) => {
         }
         <Modal show={openModal} onClose={() => setOpenModal(false)}>
             <Modal.Body className="modal1">
-            <div className="text-center modal2">
+            <div className="text-center modal2">                
                 <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
                 The winner is <b>{players.find(player => player.id === winnerId)?.nickname}</b>
                 </h3>
