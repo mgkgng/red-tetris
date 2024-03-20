@@ -1,0 +1,20 @@
+.accordion {
+	@apply border-none rounded-none rounded-b-none rounded-t-none first:rounded-none focus:ring-0 opacity-80 justify-center items-center;
+	background: none !important;
+	color: white !important;
+}
+
+.accordion:hover {
+	@apply opacity-100;
+	background: none !important;
+}
+
+.accordion:focus {
+	@apply text-white border-none;
+	background: none !important;
+}
+
+.accordion:focus:hover {
+	@apply opacity-100;
+	background: none !important;
+}

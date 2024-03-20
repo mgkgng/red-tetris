@@ -72,3 +72,11 @@ export const TetrisScores = [ 0, 40, 100, 300, 1200 ]
 export const TetrisFrames = [
     48, 43, 38, 33, 28, 23, 18, 13, 8, 6, 5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2
 ]
+
+export const PLAYER_LIMIT = 5;
+
+export const StartingLevelPerDifficulty = {
+    'easy': 0,
+    'medium': 4,
+    'hard': 8
+}

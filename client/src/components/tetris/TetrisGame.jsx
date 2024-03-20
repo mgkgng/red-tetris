@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './page.module.css';
-import { TETRIS_BLOCK_SIZE, TETRIS_COLS, TETRIS_ROWS, SHAPES, TETRIS_SHAPES } from '@/constants.js';
-import Button from '@/components/Button.jsx';
+import { TETRIS_COLS, TETRIS_ROWS } from '@/constants.js';
 import PlayerList from '../PlayerList.jsx';
 
 const MALUS = 255;
@@ -21,12 +20,6 @@ const BLOCK_COLORS = {
 
 function createEmptyGrid() { return Array.from({ length: TETRIS_ROWS }, () => new Array(TETRIS_COLS).fill(0)); }
 
-function addSpacePaddingToScore(score) {
-	const scoreStr = score ? score.toString() : '0';
-	const padding = ' '.repeat(9 - scoreStr.length);
-	return padding + scoreStr;
-}
-
 const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, setScores }) => {
 	const [myGrid, setMyGrid] = useState(createEmptyGrid());
 	const [othersGrid, setOthersGrid] = useState(initOthersGrid());
@@ -35,7 +28,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [gameResultMessage, setGameResultMessage] = useState('');	
 
-	const acceleartingRef = useRef(false);
+	const acceleratingRef = useRef(false);
 
 	function initGame() {
 		setGameStarted(true);
@@ -167,9 +160,9 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 		} else if (e.key === "ArrowUp") {
 			socket.emit('rotateBlock');
 		} else if (e.key === "ArrowDown") {
-			if (acceleartingRef.current) return;
+			if (acceleratingRef.current) return;
 			socket.emit('startAccelerate');
-			acceleartingRef.current = true;
+			acceleratingRef.current = true;
 		} else if (e.key === " ") {
 			socket.emit('hardDrop');
 		}
@@ -177,9 +170,9 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 
 	function handleKeyUp(e) {
 		if (e.key === "ArrowDown") {
-			if (!acceleartingRef.current) return;
+			if (!acceleratingRef.current) return;
 			socket?.emit('stopAccelerate');
-			acceleartingRef.current = false;
+			acceleratingRef.current = false;
 		}
 	}
 
@@ -201,9 +194,9 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 					<p>{scores.get(socket?.id)}</p>
 				</div>
 				{!gameStarted && hostId === socket?.id &&
-				<Button onClick={() => socket?.emit('startGame')}
+				<button onClick={() => socket?.emit('startGame')}
 					className="text-black bg-white hover:bg-gray-300 px-3 duration-150"
-				>start</Button>
+				>start</button>
 				}
 			</div>
 			{/* Game Body */}

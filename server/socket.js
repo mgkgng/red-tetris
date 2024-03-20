@@ -1,6 +1,7 @@
     import { Player } from './models/Player.js';
     import { gameManager } from './models/GameManager.js';
     import { Server } from 'socket.io';
+    import { PLAYER_LIMIT } from './constants.js';
 
     export function initSocketServer(server) {
     const io = new Server(server, {
@@ -19,7 +20,19 @@
         gameManager.players.set(socket.id, player);
 
         const room = gameManager.getRoom(room_id);
-        if (!room) return;
+        if (!room) {
+            console.log('Room not found'); // TODO redirect
+            socket.emit('roomError', { message: 'Room not found' });
+            return ;
+        } else if (room.playing) {
+            console.log('Room is already in a game');
+            socket.emit('roomError', { message: 'Room is already in a game' });
+            return ;
+        } else if (room.joinedPlayer.length >= PLAYER_LIMIT) {
+            console.log('Room is full');
+            socket.emit('roomError', { message: 'Room is full' });
+            return ;
+        }
 
         room.addPlayer(socket.id, player);
         room.broadcast('playerJoined', { id: socket.id, nickname, emoji });

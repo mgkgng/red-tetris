@@ -6,23 +6,36 @@
 	@apply text-7xl bg-gray-100 opacity-95 hover:opacity-100 rounded-md pt-2 cursor-pointer select-none text-center w-28 h-28 flex justify-center items-center;
 }
 
-.accordion {
-	@apply border-none rounded-none rounded-b-none rounded-t-none first:rounded-none focus:ring-0 opacity-80 justify-center items-center;
-	background: none !important;
-	color: white !important;
+.radioGroup {
+    display: flex;
+    gap: 10px; /* Adjust space between buttons as needed */
 }
 
-.accordion:hover {
-	@apply opacity-100;
-	background: none !important;
+.hiddenRadio {
+    display: none; /* Hide the actual radio input */
 }
 
-.accordion:focus {
-	@apply text-white border-none;
-	background: none !important;
+.button {
+    display: inline-block;
+    padding: 10px 15px;
+    border: 2px solid transparent; /* Adjust or remove border as needed */
+    border-radius: 4px; /* Rounded corners for the buttons */
+    background-color: #000; /* Default background */
+	color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-.accordion:focus:hover {
-	@apply opacity-100;
-	background: none !important;
+.button:hover {
+    background-color: #707070; /* Lighten on hover for feedback */
+}
+
+.button:focus:hover {
+	background-color: #e0e0e0;
+}
+
+.selected {
+    background-color: #e0e0e0; /* Color when selected */
+    color: black; /* Text color when selected */
+    border-color: #e0e0e0; /* Optional: if you want a border around selected */
 }

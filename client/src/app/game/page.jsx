@@ -2,11 +2,9 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Button from '@/components/Button.jsx';
-import Picker from "emoji-picker-react";
 import styles from './page.module.css';
 import anime from 'animejs';
-import { Accordion } from 'flowbite-react';
+import EmojiAccordeon from '@/components/EmojiAccordeon';
 
 // TODO set waiting state
 const GAME_STATES = {
@@ -21,12 +19,16 @@ const Page = () => {
 	const [gameList, setGameList] = useState([]);
 	const [gameListLoading, setGameListLoading] = useState(false);
 	const [nameEmoji, setNameEmoji] = useState('🙂');
-	const [emoji1, setEmoji1] = useState('🐥');
-	const [emoji2, setEmoji2] = useState('🐥');
-	const [emoji3, setEmoji3] = useState('🐥');
+	const [roomEmoji, setRoomEmoji] = useState('🐥');
+	const [level, setLevel] = useState('easy');
+
 	const router = useRouter();
 
 	const wrapperElemRef = useRef(null);
+
+    function handleChange(event) {
+        setLevel(event.target.value);
+    };
 
 	function animeAppear() {
 		if (!wrapperElemRef.current) return;
@@ -54,6 +56,8 @@ const Page = () => {
 			}, 200);
 			return data;
 		});
+
+		console.log('game list: ', data);
 		setGameList(data);
 	}
 
@@ -91,12 +95,15 @@ const Page = () => {
 			const response = await fetch('http://localhost:3000/api/create_room', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ titleEmojis: [emoji1, emoji2, emoji3]}),
+				body: JSON.stringify({ 
+					emoji: roomEmoji,
+					difficulty: level,
+				}),
 			});
 
 			if (!response.ok) {
 				// throw new Error(response.message);
-				// TODO
+				// TODO modal
 				return ;
 			}
 
@@ -112,10 +119,6 @@ const Page = () => {
 		}
 	}
 
-	function onEmojiClick(event, emojiObject) {
-		setNameEmoji(event.emoji);
-	}
-
     return (
 		<div ref={wrapperElemRef} className="w-full h-full flex justify-center items-center">
 
@@ -123,22 +126,7 @@ const Page = () => {
 			<div className="flex flex-col gap-1 justify-center items-center p-12">
 				<div className='flex flex-col gap-1 justify-center items-center'>
 					<span className={styles.nameEmojiContainer}>{nameEmoji}</span>
-
-					<Accordion className='border-none hover:bg-none border-t-0' collapseAll>
-						<Accordion.Panel>
-							<Accordion.Title className={styles.accordion}>Pick My Emoji</Accordion.Title>
-							<Accordion.Content className="focus:border-t-0">
-								<Picker
-									onEmojiClick={onEmojiClick} 
-									searchDisabled={true}
-									reactionsDefaultOpen={true}
-									height={250}
-									native
-								/>
-							</Accordion.Content>
-						</Accordion.Panel>
-					</Accordion>
-
+					<EmojiAccordeon onEmojiClick={(event) => setNameEmoji(event.emoji)} />
 					<input 
 						type="text" 
 						placeholder="Type your nickname"
@@ -148,7 +136,7 @@ const Page = () => {
 					/>
 				</div>
 				<div className="flex gap-2">
-					<Button onClick={() => {
+					<button onClick={() => {
 						// fetch game list here
 						if (!nickname?.length) return;
 						fetchGameList();
@@ -156,23 +144,23 @@ const Page = () => {
 						updateState(GAME_STATES.GAME_LIST);
 					}}
 						className="p-3 text-white hover:translate-x-1"					
-					>&gt; Next </Button>
+					>&gt; Next </button>
 				</div>
 			</div>}
 			{gameState === GAME_STATES.GAME_LIST &&
-			<div className="flex flex-col gap-2 relative pt-10 p-16 border-2 w-80 justify-center items-center">
+			<div className="flex flex-col gap-2 relative pt-10 border-2 w-96 justify-center items-center">
 				<div className="absolute top-0 right-0 h-10 flex justify-center gap-1 items-center">
-					<Button className="p-2 opacity-75 hover:opacity-100 duration-75" onClick={() => fetchGameList()}>
+					<button className="p-2 opacity-75 hover:opacity-100 duration-75" onClick={() => fetchGameList()}>
 						<img className="w-4 h-4" src="icons/refresh.svg" alt="refresh" />
-					</Button>
-					<Button className="p-2 opacity-75 hover:opacity-100 duration-75"
+					</button>
+					<button className="p-2 opacity-75 hover:opacity-100 duration-75"
 						onClick={() => {
 							updateState(GAME_STATES.CREATE)
 					}}>
 						<img className="w-6 h-6" src="icons/add.svg" alt="create" />
-					</Button>
+					</button>
 				</div>
-				<div className="mt-6">
+				<div className="mt-6 grid grid-cols-3 gap-1">
 					{gameListLoading ? (
 						<p className='text-white'>Loading...</p>
 					) : gameList.length === 0 ? (
@@ -180,14 +168,20 @@ const Page = () => {
 					) : (
 						gameList.map((game, idx) => {
 						return (
-							<div key={idx} className="flex gap-2">
-							<Button onClick={() => {
-									joinRoom(game.id);
-									router.push(`/game/${game.id}`);
-									updateState(GAME_STATES.JOINING);
-								}}
-								className="p-3 text-white bg-blue-700"  
-							>Join</Button>
+							<div key={idx} className="flex flex-col gap-2 px-10 border-2 p-4 justify-center items-center text-white">
+								<span className="text-6xl">{game.emoji}</span>
+								<div className="flex gap-2 justify-center items-center">
+									<p className="text-lg">{game.difficulty}</p>
+									<p className="text-sm text-black bg-white px-2 rounded-sm">{game.playersCount}</p>
+								</div>
+								{/* <span className="text-white">{game.playersCount}</span> */}
+								<button onClick={() => {
+										joinRoom(game.id);
+										router.push(`/game/${game.id}`);
+										updateState(GAME_STATES.JOINING);
+									}}
+									className="border-2 px-2 rounded-sm hover:bg-white hover:text-black duration-100"  
+								>join</button>
 							</div>
 						);
 						})
@@ -197,19 +191,50 @@ const Page = () => {
 			}
 			{gameState === GAME_STATES.CREATE &&
 				<div className="flex flex-col gap-2 justify-center items-center">
-					<div className="flex gap-4 items-center justify-center bg-white p-4 rounded-md">
-						{/* <div className='flex gap-1'>
-							<Picker onEmojiSelect={console.log} />
-						</div> */}
-						<span className={styles.emojiContainer}>{emoji1}</span>
-						<span className={styles.emojiContainer}>{emoji2}</span>
-						<span className={styles.emojiContainer}>{emoji3}</span>
+					<span className={styles.emojiContainer}>{roomEmoji}</span>
+					<EmojiAccordeon onEmojiClick={(event) => setRoomEmoji(event.emoji)} />
+					<div className="flex justify-center items-center gap-2">
+						<div className={styles.radioGroup}>
+							<input
+								type="radio"
+								id="easy"
+								name="level"
+								value="easy"
+								checked={level === 'easy'}
+								onChange={handleChange}
+								className={styles.hiddenRadio}
+							/>
+							<label htmlFor="easy" className={`${styles.button} ${level === 'easy' ? styles.selected : ''}`}>Easy</label>
+							
+							<input
+								type="radio"
+								id="medium"
+								name="level"
+								value="medium"
+								checked={level === 'medium'}
+								onChange={handleChange}
+								className={styles.hiddenRadio}
+							/>
+							<label htmlFor="medium" className={`${styles.button} ${level === 'medium' ? styles.selected : ''}`}>Medium</label>
+							
+							<input
+								type="radio"
+								id="hard"
+								name="level"
+								value="hard"
+								checked={level === 'hard'}
+								onChange={handleChange}
+								className={styles.hiddenRadio}
+							/>
+							<label htmlFor="hard" className={`${styles.button} ${level === 'hard' ? styles.selected : ''}`}>Hard</label>
+						</div>
+
 					</div>
 					<div className='flex gap-1'>
-						<Button className="p-3 text-white"
-							onClick={createRoom}>Create</Button>
-						<Button className="p-3 text-white"
-							onClick={() => updateState(GAME_STATES.GAME_LIST)}>Back</Button>
+						<button className="p-3 text-white hover:translate-x-1"
+							onClick={createRoom}>Create</button>
+						<button className="p-3 text-white hover:translate-x-1"
+							onClick={() => updateState(GAME_STATES.GAME_LIST)}>Back</button>
 					</div>
 
 				</div>

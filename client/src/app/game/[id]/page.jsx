@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import TetrisGame from "@/components/tetris/TetrisGame";
 import io from 'socket.io-client';
-import { Button, Modal } from 'flowbite-react';
+import { Modal } from 'flowbite-react';
 
 const Page = ({params}) => {
     const [socket, setSocket] = useState(null);
@@ -112,9 +112,9 @@ const Page = ({params}) => {
                 The winner is <b>{players.find(player => player.id === winnerId)?.nickname}</b>
                 </h3>
                 <div className="flex justify-center gap-4">
-                <Button color="gray" onClick={() => setOpenModal(false)}>
-                    Go Back
-                </Button>
+                    <button onClick={() => setOpenModal(false)}>
+                        Close
+                    </button>
                 </div>
             </div>
             </Modal.Body>

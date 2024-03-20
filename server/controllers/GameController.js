@@ -18,8 +18,9 @@ export const joinRoom = (req, res) => {
 };
 
 export const createRoom = (req, res) => {
-    const titleEmojis = req.body.titleEmojis;
-    const roomId = gameManager.setRoomInCreation(titleEmojis);
+    const roomEmoji = req.body.emoji;
+    const roomDifficulty = req.body.difficulty;
+    const roomId = gameManager.setRoomInCreation(roomEmoji, roomDifficulty);
     res.json({ roomId });
 };
 

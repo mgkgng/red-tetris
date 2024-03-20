@@ -1,18 +1,19 @@
-import { TetrisFrames } from '../constants.js';
+import { TetrisFrames, StartingLevelPerDifficulty } from '../constants.js';
 import { scoreManager } from './ScoreManager.js';
 
-const LINES_TO_LEVEL_UP = 2;
+const LINES_TO_LEVEL_UP = 10;
 
 export class Room {
-    constructor(uid, titleEmojis) {
-        this.titleEmojis = titleEmojis;
+    constructor(uid, emoji, difficulty='easy') {
+        this.emoji = emoji;
+        this.difficulty = difficulty;
+        this.level = StartingLevelPerDifficulty[difficulty];
         this.series = this.generateTetrominoSeries();
         this.playing = false;
         this.players = new Map();
         this.joinedPlayer = [];
         this.host = null;
         this.uid = uid;
-        this.level = 0;
         this.clearedLines = 0;
     }
 
