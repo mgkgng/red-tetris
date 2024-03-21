@@ -49,7 +49,7 @@ export class Room {
 
         this.series = this.generateTetrominoSeries();
         for (let player of this.players.values())
-            player.game.initialize(this.series);
+            player.game.initialize(this.series, this.level);
 
         for (let player of this.players.values())
             player.startGameLoop(this);

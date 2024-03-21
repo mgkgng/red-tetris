@@ -26,6 +26,7 @@ export class Tetris {
 		this.gameOver = false;
 		this.accelerating = false;
 		this.dropInterval = TetrisFrames[level] * 1000 / 60;
+		console.log("starting level: ", level, "drop interval: ", this.dropInterval);
 	}
 
 	initializeGrid(rows, cols) {

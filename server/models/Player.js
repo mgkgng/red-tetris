@@ -11,7 +11,6 @@ export class Player {
         this.game = null;
         this.roomId = roomId;
         this.room = null;
-        this.score = 0;
         this.playing = false; // TODO protection from the back
     }
 

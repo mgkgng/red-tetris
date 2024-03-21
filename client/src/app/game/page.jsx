@@ -3,10 +3,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
-import anime from 'animejs';
+import anime, { set } from 'animejs';
 import EmojiAccordeon from '@/components/EmojiAccordeon';
 
-// TODO set waiting state
 const GAME_STATES = {
 	SETUP_NAME: 0,
 	GAME_LIST: 1,
@@ -17,6 +16,8 @@ const Page = () => {
     const [gameState, setGameState] = useState(GAME_STATES.SETUP_NAME);
 	const [nickname, setNickname] = useState('');
 	const [gameList, setGameList] = useState([]);
+	const [gameListPage, setGameListPage] = useState(1);
+	const [gameListPageCount, setGameListPageCount] = useState(1);
 	const [gameListLoading, setGameListLoading] = useState(false);
 	const [nameEmoji, setNameEmoji] = useState('🙂');
 	const [roomEmoji, setRoomEmoji] = useState('🐥');
@@ -57,8 +58,9 @@ const Page = () => {
 			return data;
 		});
 
-		console.log('game list: ', data);
 		setGameList(data);
+		setGameListPage(1);
+		setGameListPageCount(Math.ceil(data.length / 3));
 	}
 
 	useEffect(() => {
@@ -121,7 +123,6 @@ const Page = () => {
 
     return (
 		<div ref={wrapperElemRef} className="w-full h-full flex justify-center items-center">
-
 			{gameState === GAME_STATES.SETUP_NAME && 
 			<div className="flex flex-col gap-1 justify-center items-center p-12">
 				<div className='flex flex-col gap-1 justify-center items-center'>
@@ -148,7 +149,7 @@ const Page = () => {
 				</div>
 			</div>}
 			{gameState === GAME_STATES.GAME_LIST &&
-			<div className="flex flex-col gap-2 relative pt-10 border-2 w-96 justify-center items-center">
+			<div className="flex flex-col gap-2 relative pt-10 border-2 px-6 py-2 pb-5 justify-center items-center rounded-sm">
 				<div className="absolute top-0 right-0 h-10 flex justify-center gap-1 items-center">
 					<button className="p-2 opacity-75 hover:opacity-100 duration-75" onClick={() => fetchGameList()}>
 						<img className="w-4 h-4" src="icons/refresh.svg" alt="refresh" />
@@ -160,31 +161,41 @@ const Page = () => {
 						<img className="w-6 h-6" src="icons/add.svg" alt="create" />
 					</button>
 				</div>
-				<div className="mt-6 grid grid-cols-3 gap-1">
+				<div className="mt-6">
 					{gameListLoading ? (
 						<p className='text-white'>Loading...</p>
 					) : gameList.length === 0 ? (
 						<p className='text-white'>No game available</p>
 					) : (
-						gameList.map((game, idx) => {
-						return (
-							<div key={idx} className="flex flex-col gap-2 px-10 border-2 p-4 justify-center items-center text-white">
-								<span className="text-6xl">{game.emoji}</span>
-								<div className="flex gap-2 justify-center items-center">
-									<p className="text-lg">{game.difficulty}</p>
-									<p className="text-sm text-black bg-white px-2 rounded-sm">{game.playersCount}</p>
-								</div>
-								{/* <span className="text-white">{game.playersCount}</span> */}
-								<button onClick={() => {
-										joinRoom(game.id);
-										router.push(`/game/${game.id}`);
-										updateState(GAME_STATES.JOINING);
-									}}
-									className="border-2 px-2 rounded-sm hover:bg-white hover:text-black duration-100"  
-								>join</button>
+						<div className="flex flex-col">
+							{/* Grid Container for games */}
+							<div className="grid grid-cols-3 gap-2">
+								{gameList.slice((gameListPage - 1) * 3, gameListPage * 3).map((game, idx) => (
+									<div key={idx} className="flex flex-col gap-2 p-6 py-7 border-2 justify-center items-center text-white rounded-sm">
+										<span className="text-6xl">{game.emoji}</span>
+										<div className="flex gap-2 justify-center items-center">
+											<p className="text-lg">{game.difficulty}</p>
+											<p className="text-sm text-black bg-white px-2 rounded-sm">{game.playersCount}</p>
+										</div>
+										<button onClick={() => {
+												joinRoom(game.id);
+												router.push(`/game/${game.id}`);
+												updateState(GAME_STATES.JOINING);
+											}}
+											className="border-2 px-2 rounded-sm hover:bg-white hover:text-black duration-100"
+										>Join</button>
+									</div>
+								))}
 							</div>
-						);
-						})
+				
+							{/* Pagination controls, shown only if game list is not loading or empty */}
+							<div className="flex justify-center items-center gap-4 mt-4">
+								<button onClick={() => setGameListPage(gameListPage - 1)} disabled={gameListPage === 1} className="px-4 py-2 rounded-md text-white disabled:opacity-50">{'<'}</button>
+								<p className="text-white">{gameListPage}</p>
+								<button onClick={() => setGameListPage(gameListPage + 1)} disabled={gameListPage * 3 >= gameList.length} className="px-4 py-2 rounded-md text-white disabled:opacity-50">{'>'}</button>
+							</div>
+						</div>
+			
 					)}
 				</div>
 			</div>

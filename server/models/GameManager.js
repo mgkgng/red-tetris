@@ -12,14 +12,11 @@ class GameManager {
         const id2 = this.setRoomInCreation('🍉', 'medium');
         const id3 = this.setRoomInCreation('🍌', 'hard');
         const id4 = this.setRoomInCreation('🍇', 'easy');
-        const id5 = this.setRoomInCreation('🍊', 'medium');
-        const id6 = this.setRoomInCreation('🍓', 'hard');
         this.createRoom(id1);
         this.createRoom(id2);
         this.createRoom(id3);
         this.createRoom(id4);
-        this.createRoom(id5);
-        this.createRoom(id6);
+
     }
 
     addPlayerToRoom(name, roomId) {
