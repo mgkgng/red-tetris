@@ -90,10 +90,6 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 			}
 		})
 
-		socket.on('nextPiece', (data) => {
-			console.log('nextPiece', data);
-		})
-
 		socket.on('gameOver', (data) => {
 			console.log('gameOver', data);
 			setGameOverSet(prev => new Set([...prev, data]));
@@ -140,7 +136,6 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 
 		return () => {
 			socket.off('startTetrisTest');
-			socket.off('nextPiece');
 			socket.off('gameState');
 			socket.off('gameOver');
 			socket.off('gameEnd');

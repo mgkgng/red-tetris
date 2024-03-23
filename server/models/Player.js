@@ -91,7 +91,7 @@ export class Player {
             return true;
         }
 
-        const adjustments = [-1, 1];
+        const adjustments = [-1, 1, 2];
         for (let i = 0; i < adjustments.length; i++) {
             const adjustedCol = col + adjustments[i];
             rotatedPositions = this.game.currentPiece.getRotatedPosition(row, adjustedCol);
@@ -131,7 +131,6 @@ export class Player {
             return false;
         }
         this.game.updatePiece();
-        this.socket?.emit('nextPiece', this.game.nextPiece.shape);
         if (this.game.checkGameOver()) {
             this.sendGameState();
             this.room.broadcast('gameOver', this.socket.id);

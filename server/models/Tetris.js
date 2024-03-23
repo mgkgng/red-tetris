@@ -12,7 +12,7 @@ export class Tetris {
 	}
 
 	getPieceAtIndex(index) {
-		return new Tetromino(this.pieceSeries[(index % this.pieceSeries.length + Math.floor(index / this.pieceSeries.length)) % 7]);
+		return new Tetromino(parseInt(this.pieceSeries[index % this.pieceSeries.length]) + Math.floor(index / this.pieceSeries.length) % 7);
 	}
 
 	initialize(series, level=0) {
@@ -21,7 +21,6 @@ export class Tetris {
 		this.grid = this.initializeGrid(this.rows, this.cols);
 		this.pieceIndex = 0;
 		this.currentPiece = this.getPieceAtIndex(this.pieceIndex);
-		this.nextPiece = this.getPieceAtIndex(this.pieceIndex + 1);
 		this.currentPos = { row: -1, col: Math.floor(BOARD_COLS / 2) };
 		this.gameOver = false;
 		this.accelerating = false;
@@ -113,12 +112,10 @@ export class Tetris {
 			if (r < 0) return;
 			this.grid[r][c] = FIX_OFFSET + this.currentPiece.shape;
 		});
-		this.pieceIndex++;
 	}
 
 	updatePiece() {
-		this.currentPiece = this.nextPiece;
-		this.nextPiece = this.getPieceAtIndex(this.pieceIndex);
+		this.currentPiece = this.getPieceAtIndex(++this.pieceIndex);
 		this.currentPos = { row: -1, col: Math.floor(this.cols / 2) };
 	}
 

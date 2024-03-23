@@ -40,14 +40,10 @@ export class Room {
         if (this.playing) return;
 
         this.playing = true;
-        this.broadcast('gameStarted', {
-            pieces: [
-                this.series[0],
-                this.series[1]
-            ]
-        });
+        this.broadcast('gameStarted');
 
-        this.series = this.generateTetrominoSeries();
+        console.log('series: ', this.series);
+
         for (let player of this.players.values())
             player.game.initialize(this.series, this.level);
 
@@ -111,6 +107,6 @@ export class Room {
     }
 
     generateTetrominoSeries() {
-        return Array.from({length: 256}, () => Math.floor(Math.random() * 7) + 1).join('');
+        return Array.from({length: 256}, () => Math.floor(Math.random() * 7 + 1)).join('');
     }
 }
