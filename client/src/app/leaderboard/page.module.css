@@ -1,0 +1,5 @@
+.rankRow {
+    @apply w-full h-9;
+    display: grid;
+    grid-template-columns: 10% 15% 25% 30% 20%;
+}

@@ -25,7 +25,6 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 	const [othersGrid, setOthersGrid] = useState(initOthersGrid());
 	const [gameStarted, setGameStarted] = useState(false);
 	const [gameOverSet, setGameOverSet] = useState(new Set());
-	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [gameResultMessage, setGameResultMessage] = useState('');	
 
 	const acceleratingRef = useRef(false);

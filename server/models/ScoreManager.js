@@ -31,20 +31,21 @@ class ScoreManager {
         }
     }
 
-    updateScore(name, score) {
-        if (score === 0) return ;
+    updateScore(player) {
+        if (player.score === 0) return ;
         
-        if (this.scores.length < 10 || score > this.scores[9].score)
-            this.addScore(name, score);
+        if (this.scores.length < 10 || player.score > this.scores[9].score)
+            this.addScore(player);
     }
 
-    addScore(name, score) {
+    addScore(player) {
         const info = {
-            name,
-            score,
+            name: player.name,
+            emoji: player.emoji,
+            score: player.score,
             date: new Date().toISOString()
         }
-        console.log('check date: ', info.date);
+        console.log('score updated', player.name, player.score);
         this.scores.push(info);
         this.scores.sort((a, b) => b.score - a.score);
         this.scores = this.scores.slice(0, 10);

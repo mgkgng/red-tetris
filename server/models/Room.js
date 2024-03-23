@@ -83,8 +83,7 @@ export class Room {
         if (playersAlive.length < 2) {
             if (playersAlive.length === 1) {
                 clearInterval(playersAlive[0].game.intervalId);
-                scoreManager.updateScore(playersAlive[0].name, playersAlive[0].score);
-                console.log('score updated', playersAlive[0].name, playersAlive[0].score);
+                scoreManager.updateScore(playersAlive[0]);
             }
             this.playing = false;
 

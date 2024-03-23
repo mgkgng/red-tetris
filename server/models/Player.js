@@ -134,7 +134,7 @@ export class Player {
         if (this.game.checkGameOver()) {
             this.sendGameState();
             this.room.broadcast('gameOver', this.socket.id);
-            scoreManager.updateScore(this.name, this.score);
+            scoreManager.updateScore(this);
             this.room.checkGameEnd();
             return false;
         }
