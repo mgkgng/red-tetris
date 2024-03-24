@@ -8,7 +8,6 @@ export class Room {
         this.emoji = emoji;
         this.difficulty = difficulty;
         this.level = StartingLevelPerDifficulty[difficulty];
-        this.series = this.generateTetrominoSeries();
         this.playing = false;
         this.players = new Map();
         this.joinedPlayer = [];
@@ -42,8 +41,7 @@ export class Room {
         this.playing = true;
         this.broadcast('gameStarted');
 
-        console.log('series: ', this.series);
-
+        this.series = this.generateTetrominoSeries();
         for (let player of this.players.values())
             player.game.initialize(this.series, this.level);
 

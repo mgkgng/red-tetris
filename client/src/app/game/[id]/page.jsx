@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import TetrisGame from "@/components/tetris/TetrisGame";
 import io from 'socket.io-client';
-import { Modal } from 'flowbite-react';
+import Modal from '@/components/Modal';
 
 const Page = ({params}) => {
     const [socket, setSocket] = useState(null);
@@ -105,19 +105,26 @@ const Page = ({params}) => {
             :
             <div className="text-white">{roomStateMessage}</div>
         }
-        <Modal show={openModal} onClose={() => setOpenModal(false)}>
-            <Modal.Body className="modal1">
-            <div className="text-center modal2">                
+        <Modal
+            isOpen={openModal}
+            onClose={() => setOpenModal(false)}
+        >
+            <div className="text-center">
+                {winnerId ? 
                 <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
                 The winner is <b>{players.find(player => player.id === winnerId)?.nickname}</b>
                 </h3>
+                :
+                <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                Gameover
+                </h3>
+                }
                 <div className="flex justify-center gap-4">
                     <button onClick={() => setOpenModal(false)}>
                         Close
                     </button>
                 </div>
-            </div>
-            </Modal.Body>
+            </div>            
         </Modal>
         </div>
     )

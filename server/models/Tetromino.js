@@ -4,8 +4,6 @@ export class Tetromino {
 	constructor(shape) {
 		this.shape = shape;
 		this.shapeCode = TETROMINO_CODES[shape - 1];
-		console.log('shape: ', this.shape)
-		console.log('shape code: ', this.shapeCode)
 		this.rotate = 0;
 	}
 

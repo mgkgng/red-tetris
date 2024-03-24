@@ -147,6 +147,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 
 	function handleKeyPress(e) {
 		if (!gameStarted) return;
+
 		if (e.key === "ArrowLeft") {
 			socket.emit('moveBlock', { left: true });
 		} else if (e.key === "ArrowRight") {

@@ -11,7 +11,7 @@ export class Player {
         this.game = null;
         this.roomId = roomId;
         this.room = null;
-        this.playing = false; // TODO protection from the back
+        this.playing = false;
     }
 
     initTetris(series) {

@@ -3,12 +3,12 @@ import styles from './page.module.css'
 import Link from 'next/link';
 import { useEffect } from 'react';
 
-
 export default function Home() {
 	let width, height;
 	useEffect(() => {
 		width = screen.width;
 		height = screen.height;
+
 	}, []);
 
 	return (
