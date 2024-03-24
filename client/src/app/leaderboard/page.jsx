@@ -36,8 +36,8 @@ const Page = () => {
             ) : (
                 <div className="text-white">
                     {rank.map((entry, index) => (
-                        <div className={styles.rankRow}>
-                            <p>{index}</p>
+                        <div key={entry.id || index} className={styles.rankRow}>
+                            <p>{index + 1}</p>
                             <p className='text-2xl'>{entry.emoji}</p>
                             <p>{entry.name}</p>
                             <p>{entry.score}</p>

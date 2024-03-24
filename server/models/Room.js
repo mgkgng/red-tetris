@@ -42,8 +42,10 @@ export class Room {
         this.broadcast('gameStarted');
 
         this.series = this.generateTetrominoSeries();
-        for (let player of this.players.values())
+        for (let player of this.players.values()) {
+            player.score = 0;
             player.game.initialize(this.series, this.level);
+        }
 
         for (let player of this.players.values())
             player.startGameLoop(this);
@@ -81,7 +83,7 @@ export class Room {
         if (playersAlive.length < 2) {
             if (playersAlive.length === 1) {
                 clearInterval(playersAlive[0].game.intervalId);
-                scoreManager.updateScore(playersAlive[0]);
+                scoreManager.addScore(playersAlive[0]);
             }
             this.playing = false;
 

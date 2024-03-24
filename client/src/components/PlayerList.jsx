@@ -1,12 +1,6 @@
 import { useEffect } from "react";
 
 const PlayerList = ({ players, hostId, socketId }) => {
-    useEffect(() => {
-        console.log('PlayerList', players);
-    
-    }, [players])
-
-    // icon for host, color for himself
     return (
         <div className="h-full w-28 ">
             <div className="flex flex-col gap-2 p-3 w-full h-full">

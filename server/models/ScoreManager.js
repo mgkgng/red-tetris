@@ -31,14 +31,12 @@ class ScoreManager {
         }
     }
 
-    updateScore(player) {
-        if (player.score === 0) return ;
-        
-        if (this.scores.length < 10 || player.score > this.scores[9].score)
-            this.addScore(player);
-    }
-
     addScore(player) {
+        if (player.score === 0) return ;
+    
+        if (this.scores.length >= 10 && player.score < this.scores[9].score)
+            return;
+
         const info = {
             name: player.name,
             emoji: player.emoji,

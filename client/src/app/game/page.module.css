@@ -3,7 +3,7 @@
 }
 
 .nameEmojiContainer {
-	@apply text-7xl bg-gray-100 opacity-95 hover:opacity-100 rounded-md pt-2 cursor-pointer select-none text-center w-28 h-28 flex justify-center items-center;
+	@apply text-7xl bg-gray-100 rounded-md pt-2 select-none text-center w-28 h-28 flex justify-center items-center;
 }
 
 .radioGroup {

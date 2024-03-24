@@ -140,6 +140,9 @@ const Page = () => {
 					<button onClick={() => {
 						// fetch game list here
 						if (!nickname?.length) return;
+						if (nickname?.length > 10) {
+							
+						}
 						fetchGameList();
 						setGameListLoading(true);
 						updateState(GAME_STATES.GAME_LIST);

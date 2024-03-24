@@ -29,6 +29,8 @@ export class Player {
         if (!this.room)
             this.room = room;
         clearInterval(this.game.intervalId);
+        if (this.game.gameOver)
+            return;
         this.game.intervalId = setInterval(() => {
             let shouldSend = true;
             if (!this.moveDown())
@@ -120,6 +122,8 @@ export class Player {
     }
 
     afterDropped() {
+        if (this.game.gameOver) return false;
+
         this.game.fixPiece();
         let fullRows = this.game.clearFullRows();
         if (fullRows.length > 0) {
@@ -134,7 +138,7 @@ export class Player {
         if (this.game.checkGameOver()) {
             this.sendGameState();
             this.room.broadcast('gameOver', this.socket.id);
-            scoreManager.updateScore(this);
+            scoreManager.addScore(this);
             this.room.checkGameEnd();
             return false;
         }

@@ -8,14 +8,14 @@ import PlayerList from '../PlayerList.jsx';
 const MALUS = 255;
 
 const BLOCK_COLORS = {
-	0: 'transparent',
-	1: 'cyan',
-	2: 'blue',
-	3: 'orange',
-	4: 'yellow',
-	5: 'green',
-	6: 'purple',
-	7: 'red',
+	0: 'bg-transparent',
+	1: 'bg-cyan-300',
+	2: 'bg-blue-600',
+	3: 'bg-orange-500',
+	4: 'bg-yellow-300',
+	5: 'bg-green-400',
+	6: 'bg-purple-600',
+	7: 'bg-red-600',
 };
 
 function createEmptyGrid() { return Array.from({ length: TETRIS_ROWS }, () => new Array(TETRIS_COLS).fill(0)); }
@@ -25,7 +25,6 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 	const [othersGrid, setOthersGrid] = useState(initOthersGrid());
 	const [gameStarted, setGameStarted] = useState(false);
 	const [gameOverSet, setGameOverSet] = useState(new Set());
-	const [gameResultMessage, setGameResultMessage] = useState('');	
 
 	const acceleratingRef = useRef(false);
 
@@ -33,11 +32,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 		setGameStarted(true);
 		setGameOverSet(new Set());
 		setMyGrid(createEmptyGrid());
-		setScores(prev => {
-			const newMap = new Map(prev);
-			players.forEach(player => newMap.set(player.id, 0));
-			return newMap;
-		})
+		setScores(() => new Map(players.map(player => [player.id, 0])));
 		initOthersGrid();
 	}
 
@@ -76,12 +71,12 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 	useEffect(() => {
 		if (!socket) return;
 
-		socket.on('gameStarted', (data) => {
-			console.log('gameStarted', data);
+		socket.on('gameStarted', () => {
 			initGame();
 		})
 
 		socket.on('gameStateUpdate', (data) => {
+			console.log('gameStateUpdate')
 			if (data.id === socket.id) {
 				setMyGrid(data.grid);
 			} else {
@@ -108,10 +103,6 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
             setHostId(data.id);
         });
 
-		socket.on('levelUp', (data) => {
-			console.log('levelUp', data);
-		})
-
 		socket.on('playerJoined', (data) => {
             setPlayers(prev => [...prev, data]);
 			setScores(prev => new Map(prev.set(data.id, 0)));
@@ -134,16 +125,17 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 		});
 
 		return () => {
-			socket.off('startTetrisTest');
-			socket.off('gameState');
+			socket.off('gameStarted');
+			socket.off('gameStateUpdate');
 			socket.off('gameOver');
 			socket.off('gameEnd');
 			socket.off('rowsCleared');
 			socket.off('playerJoined');
 			socket.off('playerLeft');
 			socket.off('updateHost');
+
 		};
-	}, [socket]);
+	}, [socket, players, scores]);
 
 	function handleKeyPress(e) {
 		if (!gameStarted) return;
@@ -201,14 +193,15 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 					{row.map((cell, cellIndex) => (
 						<div
 							key={cellIndex}
-							className={styles.cell}
-							style={
-								(!gameOverSet.has(socket?.id)) 
-								? { backgroundColor: cell == MALUS ? 'rgb(200, 48, 6)' : BLOCK_COLORS[cell % 8] }
-								: (cell) 
-								? { backgroundColor: 'rgba(156, 156, 156)' }
-								: { backgroundColor: 'rgba(255, 255, 255)' }
-							}
+							className={`${
+								!gameOverSet.has(socket?.id)
+									? cell === MALUS
+										? 'bg-stone-500' 
+										: `${BLOCK_COLORS[cell % 8]}`
+									: cell
+										? 'bg-gray-400'
+										: 'bg-white'
+							  } ${styles.cell}`}
 						></div>
 					))}
 					</div>
