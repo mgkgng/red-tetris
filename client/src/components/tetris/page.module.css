@@ -1,25 +1,59 @@
 .tetrisGrid {
 	display: grid;
-	grid-template-rows: repeat(20, 1.5vw); /* 20 rows, each 30px high */
-	gap: 0.35vw;
+	grid-template-rows: repeat(20, 2.67vw); /* 20 rows, each 30px high */
+	gap: 0.62vw;
 }
 
 .row {
 	@apply rounded-xl;
-	grid-template-columns: repeat(10, 1.5vw); /* 10 columns, each 30px wide */
+	grid-template-columns: repeat(10, 2.67vw); /* 10 columns, each 30px wide */
 	display: grid;
-	gap: 0.3vw;
+	gap: 0.53vw;
+}
+
+@media screen and (min-width: 45rem) {
+	.tetrisGrid {
+		display: grid;
+		grid-template-rows: repeat(20, 1.2rem);
+		gap: 0.28rem;
+	}
+
+	.row {
+		@apply rounded-xl;
+		grid-template-columns: repeat(10, 1.2rem); 
+		display: grid;
+		gap: 0.24rem;
+	}
+}
+
+.othersGameGrid {
+	@apply flex gap-2 p-5;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+}
+
+@media screen and (max-width: 60rem) {
+	.othersGameGrid {
+		display: none;
+		
+	}
+}
+
+.othersTetrisWrapper {
+	@apply p-4 py-2 bg-none;
 }
 
 .othersTetrisGrid {
 	display: grid;
-	grid-template-rows: repeat(20, 0.5vw);
+	grid-template-rows: repeat(20, 0.55rem);
+	gap: 0.12rem;
 }
 
 .othersRow {
 	@apply rounded-xl;
-	grid-template-columns: repeat(10, 0.5vw);
+	grid-template-columns: repeat(10, 0.55rem);
 	display: grid;
+	gap: 0.11rem;
 }
 
 .cell {

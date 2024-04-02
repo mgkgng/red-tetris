@@ -81,6 +81,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 				setMyGrid(data.grid);
 			} else {
 				updateOthersGrid(data.id, data.grid);
+				console.log('after update:' ,othersGrid.get(data.id))
 			}
 		})
 
@@ -135,7 +136,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 			socket.off('updateHost');
 
 		};
-	}, [socket, players, scores]);
+	}, [socket, players, scores, othersGrid, myGrid]);
 
 	function handleKeyPress(e) {
 		if (!gameStarted) return;
@@ -209,28 +210,29 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 			</div>
 			
 		</div>
-		<div className="othersGame flex gap-2">
+		<div className={styles.othersGameGrid}>
 			{Array.from(othersGrid.entries()).map(([playerId, grid], index) => (
-			<div key={playerId}>
+			<div className={styles.othersTetrisWrapper} key={playerId}>
 				<div className={styles.othersTetrisGrid}>
 					{grid.map((row, rowIndex) => (
 					<div key={rowIndex} className={styles.othersRow}>
 						{row.map((cell, cellIndex) => (
 						<div
 							key={cellIndex}
-							className={`${styles.cell} ${cell ? 'filled' : ''}`}
-							style={
-								(!gameOverSet.has(playerId)) 
-								? { backgroundColor: cell == MALUS ? 'rgb(200, 48, 6)' : BLOCK_COLORS[cell % 8] }
-								: (cell) 
-								? { backgroundColor: 'rgba(156, 156, 156)' }
-								: { backgroundColor: 'rgba(164, 164, 164)' }
-							}
+							className={`${
+								!gameOverSet.has(playerId)
+									? cell === MALUS
+										? 'bg-stone-500' 
+										: `${BLOCK_COLORS[cell % 8]}`
+									: cell
+										? 'bg-gray-400'
+										: 'bg-white'
+							  } ${styles.cell}`}
 						></div>
 						))}
 					</div>
 					))}
-				</div>
+				</div>d
 			</div>
 			))}
 		</div>

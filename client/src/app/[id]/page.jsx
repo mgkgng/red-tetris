@@ -18,6 +18,9 @@ const Page = ({params}) => {
     const [winnerId, setWinnerId] = useState(null);
     const [openModal, setOpenModal] = useState(false);
     const [scores, setScores] = useState(new Map());
+    const [shouldRedirect, setShouldRedirect] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+
 
     function initializeScores() {
         const initialScores = new Map();
@@ -35,6 +38,8 @@ const Page = ({params}) => {
             setNickname(storedNickname);
             setNameEmoji(storedEmoji);
             setLocalStorageChecked(true);
+
+            // TODO when it is set, and affect the /game page
             localStorage.removeItem('nickname');
             localStorage.removeItem('emoji');
         }
@@ -52,7 +57,6 @@ const Page = ({params}) => {
                 }
     
                 const data = await response.json();
-                console.log("first data received:", data)
                 setPlayers(data.players);
                 setHostId(data.host);
                 initializeScores()
@@ -80,20 +84,33 @@ const Page = ({params}) => {
 
         socket.on('gameEnd', ({winner}) => {
             setOpenModal(true);
-            winner && setWinnerId(winner);
+            if (!winner) {
+                setModalMessage('Gameover');
+            } else if (winner === socket.id) {
+                setModalMessage('You are the winner');
+            } else {
+                setModalMessage('The winner is ' + players.find(player => player.id === winner).nickname);
+            }
         })
 
         socket.on('scoreUpdate', (data) => {
             setScores(prev => new Map(prev.set(data.player, data.score)));
         });
 
+        socket.on('roomError', (data) => {
+            setModalMessage(data.message);
+            setShouldRedirect(true);
+            setOpenModal(true);
+        })
+
         return (() => {
             socket.off('gameEnd');
+            socket.off('scoreUpdate')
         });
     }, [socket])
 
     return (
-        <div className="relative">
+        <div className="relative w-full">
         {roomVerified ?
             <div className="flex gap-5 h-screen py-5 justify-center items-center">
                 <TetrisGame socket={socket} 
@@ -110,17 +127,17 @@ const Page = ({params}) => {
             onClose={() => setOpenModal(false)}
         >
             <div className="text-center">
-                {winnerId ? 
                 <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                The winner is <b>{players.find(player => player.id === winnerId)?.nickname}</b>
+                {modalMessage}
                 </h3>
-                :
-                <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
-                Gameover
-                </h3>
-                }
+        
                 <div className="flex justify-center gap-4">
-                    <button onClick={() => setOpenModal(false)}>
+                    <button onClick={() => {
+                        if (shouldRedirect === true) {
+                            redirect('/game');
+                        }
+                        setOpenModal(false);
+                    }}>
                         Close
                     </button>
                 </div>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 import anime, { set } from 'animejs';
 import EmojiAccordeon from '@/components/EmojiAccordeon';
+import Modal from '@/components/Modal';
 
 const GAME_STATES = {
 	SETUP_NAME: 0,
@@ -17,11 +18,12 @@ const Page = () => {
 	const [nickname, setNickname] = useState('');
 	const [gameList, setGameList] = useState([]);
 	const [gameListPage, setGameListPage] = useState(1);
-	const [gameListPageCount, setGameListPageCount] = useState(1);
 	const [gameListLoading, setGameListLoading] = useState(false);
 	const [nameEmoji, setNameEmoji] = useState('🙂');
 	const [roomEmoji, setRoomEmoji] = useState('🐥');
 	const [level, setLevel] = useState('easy');
+	const [openModal, setOpenModal] = useState(false);
+	const [errorMessage, setErrorMessage] = useState('');
 
 	const router = useRouter();
 
@@ -60,7 +62,6 @@ const Page = () => {
 
 		setGameList(data);
 		setGameListPage(1);
-		setGameListPageCount(Math.ceil(data.length / 3));
 	}
 
 	useEffect(() => {
@@ -76,8 +77,8 @@ const Page = () => {
 			});
 		
 			if (!response.ok) {
-				// throw new Error(response.message);
-				// TODO join room error
+				setErrorMessage('Error joining room');
+				setOpenModal(true);
 				return;
 			}
 		
@@ -85,7 +86,7 @@ const Page = () => {
 			console.log(data);
 			localStorage.setItem('nickname', nickname);
 			localStorage.setItem('emoji', nameEmoji);
-			router.push(`/game/${data.roomId}`);
+			router.push(`/${data.roomId}`);
 			return data;
 			} catch (error) {
 				throw error;
@@ -104,8 +105,8 @@ const Page = () => {
 			});
 
 			if (!response.ok) {
-				// throw new Error(response.message);
-				// TODO modal
+				setErrorMessage('Error creating room');
+				setOpenModal(true);
 				return ;
 			}
 
@@ -114,7 +115,7 @@ const Page = () => {
 
 			localStorage.setItem('nickname', nickname);
 			localStorage.setItem('emoji', nameEmoji);
-			router.push(`/game/${data.roomId}`);
+			router.push(`/${data.roomId}`);
 		} catch (e) {
 			console.error(e);
 			throw error;
@@ -123,6 +124,17 @@ const Page = () => {
 
     return (
 		<div ref={wrapperElemRef} className="w-full h-full flex justify-center items-center">
+			<Modal
+				isOpen={openModal}
+            	onClose={() => setOpenModal(false)}
+			>
+				<div className="flex flex-col gap-5 justify-center items-center">
+					<p>{errorMessage}</p>
+					<button onClick={() => setOpenModal(false)}>
+                        Close
+                    </button>
+				</div>
+			</Modal>
 			{gameState === GAME_STATES.SETUP_NAME && 
 			<div className="flex flex-col gap-1 justify-center items-center p-12">
 				<div className='flex flex-col gap-1 justify-center items-center'>
@@ -141,7 +153,9 @@ const Page = () => {
 						// fetch game list here
 						if (!nickname?.length) return;
 						if (nickname?.length > 10) {
-							
+							setErrorMessage('Nickname should be less than 10 characters');
+							setOpenModal(true);
+							return ;
 						}
 						fetchGameList();
 						setGameListLoading(true);
