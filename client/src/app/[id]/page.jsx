@@ -15,7 +15,6 @@ const Page = ({params}) => {
     const [roomStateMessage, setRoomStateMessage] = useState('loading...');
     const [players, setPlayers] = useState([]);
     const [hostId, setHostId] = useState(null);
-    const [winnerId, setWinnerId] = useState(null);
     const [openModal, setOpenModal] = useState(false);
     const [scores, setScores] = useState(new Map());
     const [shouldRedirect, setShouldRedirect] = useState(false);
@@ -38,10 +37,6 @@ const Page = ({params}) => {
             setNickname(storedNickname);
             setNameEmoji(storedEmoji);
             setLocalStorageChecked(true);
-
-            // TODO when it is set, and affect the /game page
-            localStorage.removeItem('nickname');
-            localStorage.removeItem('emoji');
         }
     }, [])
 

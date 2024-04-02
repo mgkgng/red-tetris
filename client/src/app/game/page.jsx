@@ -24,10 +24,26 @@ const Page = () => {
 	const [level, setLevel] = useState('easy');
 	const [openModal, setOpenModal] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
+	const [localStorageChecked, setLocalStorageChecked] = useState(false);
 
 	const router = useRouter();
 
 	const wrapperElemRef = useRef(null);
+
+	useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const storedNickname = localStorage.getItem('nickname');
+            const storedEmoji = localStorage.getItem('emoji');
+            if (!storedNickname || !storedEmoji) {
+				setLocalStorageChecked(true);
+				return ;
+			}
+            setNickname(storedNickname);
+            setNameEmoji(storedEmoji);
+			setGameState(GAME_STATES.GAME_LIST);
+			setLocalStorageChecked(true);
+        }
+    }, [])
 
     function handleChange(event) {
         setLevel(event.target.value);
@@ -83,9 +99,6 @@ const Page = () => {
 			}
 		
 			const data = await response.json();
-			console.log(data);
-			localStorage.setItem('nickname', nickname);
-			localStorage.setItem('emoji', nameEmoji);
 			router.push(`/${data.roomId}`);
 			return data;
 			} catch (error) {
@@ -135,7 +148,9 @@ const Page = () => {
                     </button>
 				</div>
 			</Modal>
-			{gameState === GAME_STATES.SETUP_NAME && 
+			{!localStorageChecked ?
+			<></>
+			:gameState === GAME_STATES.SETUP_NAME ?
 			<div className="flex flex-col gap-1 justify-center items-center p-12">
 				<div className='flex flex-col gap-1 justify-center items-center'>
 					<span className={styles.nameEmojiContainer}>{nameEmoji}</span>
@@ -150,7 +165,6 @@ const Page = () => {
 				</div>
 				<div className="flex gap-2">
 					<button onClick={() => {
-						// fetch game list here
 						if (!nickname?.length) return;
 						if (nickname?.length > 10) {
 							setErrorMessage('Nickname should be less than 10 characters');
@@ -159,14 +173,19 @@ const Page = () => {
 						}
 						fetchGameList();
 						setGameListLoading(true);
+						localStorage.setItem('nickname', nickname);
+						localStorage.setItem('emoji', nameEmoji);
 						updateState(GAME_STATES.GAME_LIST);
 					}}
 						className="p-3 text-white hover:translate-x-1"					
 					>&gt; Next </button>
 				</div>
-			</div>}
-			{gameState === GAME_STATES.GAME_LIST &&
+			</div>
+			:gameState === GAME_STATES.GAME_LIST ?
 			<div className="flex flex-col gap-2 relative pt-10 border-2 px-6 py-2 pb-5 justify-center items-center rounded-sm">
+				<button className="absolute top-1 left-1 p-2 opacity-75 hover:opacity-100 duration-75" onClick={() => updateState(GAME_STATES.SETUP_NAME)}>
+					<img className="w-4 h-4" src="icons/back.svg" alt="back"/>
+				</button>
 				<div className="absolute top-0 right-0 h-10 flex justify-center gap-1 items-center">
 					<button className="p-2 opacity-75 hover:opacity-100 duration-75" onClick={() => fetchGameList()}>
 						<img className="w-4 h-4" src="icons/refresh.svg" alt="refresh" />
@@ -178,7 +197,7 @@ const Page = () => {
 						<img className="w-6 h-6" src="icons/add.svg" alt="create" />
 					</button>
 				</div>
-				<div className="mt-6">
+				<div className="mt-6 pb-7">
 					{gameListLoading ? (
 						<p className='text-white'>Loading...</p>
 					) : gameList.length === 0 ? (
@@ -216,8 +235,7 @@ const Page = () => {
 					)}
 				</div>
 			</div>
-			}
-			{gameState === GAME_STATES.CREATE &&
+			:
 				<div className="flex flex-col gap-2 justify-center items-center">
 					<span className={styles.emojiContainer}>{roomEmoji}</span>
 					<EmojiAccordeon onEmojiClick={(event) => setRoomEmoji(event.emoji)} />
