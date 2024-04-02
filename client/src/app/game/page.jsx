@@ -41,6 +41,7 @@ const Page = () => {
             setNickname(storedNickname);
             setNameEmoji(storedEmoji);
 			setGameState(GAME_STATES.GAME_LIST);
+			fetchGameList();
 			setLocalStorageChecked(true);
         }
     }, [])

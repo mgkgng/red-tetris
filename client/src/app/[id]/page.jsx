@@ -128,7 +128,10 @@ const Page = ({params}) => {
         
                 <div className="flex justify-center gap-4">
                     <button onClick={() => {
+                        console.log("here")
                         if (shouldRedirect === true) {
+                            console.log("hello");
+                            // TODO debug
                             redirect('/game');
                         }
                         setOpenModal(false);
@@ -136,7 +139,7 @@ const Page = ({params}) => {
                         Close
                     </button>
                 </div>
-            </div>            
+            </div>
         </Modal>
         </div>
     )
