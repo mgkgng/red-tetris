@@ -21,7 +21,7 @@
 
         const room = gameManager.getRoom(room_id);
         if (!room) {
-            console.log('Room not found'); // TODO redirect
+            console.log('Room not found');
             socket.emit('roomError', { message: 'Room not found' });
             return ;
         } else if (room.playing) {

@@ -26,7 +26,6 @@ export const createRoom = (req, res) => {
 
 export const verifyRoom = (req, res) => {
     const { id } = req.params;
-    console.log('lets verify', id);
     if (gameManager.roomInCreation.has(id)) {
         const room = gameManager.createRoom(id);
         console.log('room created:', id);

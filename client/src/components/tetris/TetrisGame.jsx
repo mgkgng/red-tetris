@@ -20,10 +20,9 @@ const BLOCK_COLORS = {
 
 function createEmptyGrid() { return Array.from({ length: TETRIS_ROWS }, () => new Array(TETRIS_COLS).fill(0)); }
 
-const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, setScores }) => {
+const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, setScores, gameStarted, setGameStarted }) => {
 	const [myGrid, setMyGrid] = useState(createEmptyGrid());
 	const [othersGrid, setOthersGrid] = useState(initOthersGrid());
-	const [gameStarted, setGameStarted] = useState(false);
 	const [gameOverSet, setGameOverSet] = useState(new Set());
 
 	const acceleratingRef = useRef(false);
@@ -76,23 +75,16 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 		})
 
 		socket.on('gameStateUpdate', (data) => {
-			console.log('gameStateUpdate')
 			if (data.id === socket.id) {
 				setMyGrid(data.grid);
 			} else {
 				updateOthersGrid(data.id, data.grid);
-				console.log('after update:' ,othersGrid.get(data.id))
 			}
 		})
 
 		socket.on('gameOver', (data) => {
 			console.log('gameOver', data);
 			setGameOverSet(prev => new Set([...prev, data]));
-		})
-
-		socket.on('gameEnd', ({winner}) => {
-			console.log('gameEnd', winner);
-			setGameStarted(false);
 		})
 
 		socket.on('rowsCleared', (data) => {
@@ -129,7 +121,6 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 			socket.off('gameStarted');
 			socket.off('gameStateUpdate');
 			socket.off('gameOver');
-			socket.off('gameEnd');
 			socket.off('rowsCleared');
 			socket.off('playerJoined');
 			socket.off('playerLeft');

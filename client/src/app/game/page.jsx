@@ -1,293 +1,168 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import styles from './page.module.css';
-import anime, { set } from 'animejs';
-import EmojiAccordeon from '@/components/EmojiAccordeon';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
+import TetrisGame from "@/components/tetris/TetrisGame";
+import io from 'socket.io-client';
 import Modal from '@/components/Modal';
 
-const GAME_STATES = {
-	SETUP_NAME: 0,
-	GAME_LIST: 1,
-	CREATE: 2,
-};
-
-const Page = () => {
-    const [gameState, setGameState] = useState(GAME_STATES.SETUP_NAME);
-	const [nickname, setNickname] = useState('');
-	const [gameList, setGameList] = useState([]);
-	const [gameListPage, setGameListPage] = useState(1);
-	const [gameListLoading, setGameListLoading] = useState(false);
-	const [nameEmoji, setNameEmoji] = useState('🙂');
-	const [roomEmoji, setRoomEmoji] = useState('🐥');
-	const [level, setLevel] = useState('easy');
-	const [openModal, setOpenModal] = useState(false);
-	const [errorMessage, setErrorMessage] = useState('');
-	const [localStorageChecked, setLocalStorageChecked] = useState(false);
-
-	const router = useRouter();
-
-	const wrapperElemRef = useRef(null);
+const Page = ({params}) => {
+    const [socket, setSocket] = useState(null);
+    const [roomVerified, setRoomVerified] = useState(false);
+    const [localStorageChecked, setLocalStorageChecked] = useState(false);
+    const [nickname, setNickname] = useState('');
+    const [nameEmoji, setNameEmoji] = useState('');
+    const [roomStateMessage, setRoomStateMessage] = useState('loading...');
+    const [players, setPlayers] = useState([]);
+    const [hostId, setHostId] = useState(null);
+    const [openModal, setOpenModal] = useState(false);
+    const [scores, setScores] = useState(new Map());
+    const [shouldRedirect, setShouldRedirect] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
+    const [gameStarted, setGameStarted] = useState(false);
+	const [hash, setHash] = useState('');
+    const router = useRouter();
 
 	useEffect(() => {
+		const currentHash = window.location.hash;
+	
+		const hashValue = currentHash.substring(1);
+        if (hashValue === '') {
+            router.push('/');
+            return ;
+        }
+        
+		setHash(hashValue);
+	}, []);
+
+    function initializeScores() {
+        const initialScores = new Map();
+        players.forEach(playerId => { initialScores.set(playerId, 0); });
+        setScores(initialScores);
+    }
+    
+    useEffect(() => {
         if (typeof window !== 'undefined') {
             const storedNickname = localStorage.getItem('nickname');
             const storedEmoji = localStorage.getItem('emoji');
-            if (!storedNickname || !storedEmoji) {
-				setLocalStorageChecked(true);
-				return ;
-			}
+            if (!storedNickname || !storedEmoji)
+                redirect('/game');
             setNickname(storedNickname);
             setNameEmoji(storedEmoji);
-			setGameState(GAME_STATES.GAME_LIST);
-			fetchGameList();
-			setLocalStorageChecked(true);
+            setLocalStorageChecked(true);
         }
     }, [])
 
-    function handleChange(event) {
-        setLevel(event.target.value);
-    };
+    useEffect(() => {
+        if (!localStorageChecked) return ;
+        if (hash === '') return ;
+        async function VerifyRoom(){  
+            try {
+                const response = await fetch(`http://localhost:3000/api/verify_room/${hash}`);
+                if (!response.ok) {
+                    // console.log(response.status)
+                    setRoomStateMessage('Room not found');
+                    return;
+                }
+    
+                const data = await response.json();
+                setPlayers(data.players);
+                setHostId(data.host);
+                initializeScores()
+                setRoomVerified(true);
+            } catch (error) {
+                console.error(error);
+                router.push('/');
+            }
+        };
+        VerifyRoom();
+    }, [localStorageChecked, hash]);
 
-	function animeAppear() {
-		if (!wrapperElemRef.current) return;
-		anime({
-			targets: wrapperElemRef.current,
-			opacity: [0, 1],
-			duration: 400,
-			translateX: [-150, 0],
-			easing: 'easeInOutQuad',
-		});
-	}
+    useEffect(() => {
+        if (!roomVerified) return;
+        if (hash === '') return ;
+        const newSocket = io(`http://localhost:3000?nickname=${nickname}&room_id=${hash}&emoji=${nameEmoji}`);
+        newSocket && setSocket(newSocket);
 
-	function updateState(state) {
-		setGameState(state);
-		animeAppear();
-	}
+        return () => {
+			newSocket.disconnect();
+        };
+    }, [roomVerified, hash]);
 
-	async function fetchGameList() {
-		setGameListLoading(true);
+    useEffect(() => {
+        if (!socket) return ;
 
-		const response = await fetch(`http://localhost:3000/api/game_list`);
-		const data = await response.json().then((data) => {
-			setTimeout(() => {
-				setGameListLoading(false);
-			}, 200);
-			return data;
-		});
+        socket.on('gameEnd', ({winner}) => {
+			setGameStarted(false);
+            if (!winner) {
+                setModalMessage('Gameover');
+            } else if (winner === socket.id) {
+                setModalMessage('You are the winner');
+            } else {
+                setModalMessage('The winner is ' + players.find(player => player.id === winner).nickname);
+            }
+            setOpenModal(true);
+        })
 
-		setGameList(data);
-		setGameListPage(1);
-	}
+        socket.on('scoreUpdate', (data) => {
+            setScores(prev => new Map(prev.set(data.player, data.score)));
+        });
 
-	useEffect(() => {
-		animeAppear();
-	}, [])
+        socket.on('roomError', (data) => {
+            console.log('in room error')
+            setModalMessage(data.message);
+            setShouldRedirect(true);
+            setOpenModal(true);
+        })
 
-	async function joinRoom(roomId){
-		try {
-			const response = await fetch('http://localhost:3000/api/join_room', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ roomId }),
-			});
-		
-			if (!response.ok) {
-				setErrorMessage('Error joining room');
-				setOpenModal(true);
-				return;
-			}
-		
-			const data = await response.json();
-			router.push(`/${data.roomId}`);
-			return data;
-			} catch (error) {
-				throw error;
-			}
-	};
+        socket.on('updateHost', ({id}) => {
+            setHostId(id);
+        })
 
-	async function createRoom() {
-		try {
-			const response = await fetch('http://localhost:3000/api/create_room', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ 
-					emoji: roomEmoji,
-					difficulty: level,
-				}),
-			});
-
-			if (!response.ok) {
-				setErrorMessage('Error creating room');
-				setOpenModal(true);
-				return ;
-			}
-
-			const data = await response.json();
-			console.log(data);
-
-			localStorage.setItem('nickname', nickname);
-			localStorage.setItem('emoji', nameEmoji);
-			router.push(`/${data.roomId}`);
-		} catch (e) {
-			console.error(e);
-			throw error;
-		}
-	}
+        return (() => {
+            socket.off('gameEnd');
+            socket.off('scoreUpdate');
+            socket.off('roomError');
+        });
+    }, [socket])
 
     return (
-		<div ref={wrapperElemRef} className="w-full h-full flex justify-center items-center">
-			<Modal
-				isOpen={openModal}
-            	onClose={() => setOpenModal(false)}
-			>
-				<div className="flex flex-col gap-5 justify-center items-center">
-					<p>{errorMessage}</p>
-					<button onClick={() => setOpenModal(false)}>
+        <div className="relative w-full">
+        {roomVerified ?
+            <div className="flex gap-5 h-screen py-5 justify-center items-center">
+                <TetrisGame socket={socket} 
+                    players={players} setPlayers={setPlayers}
+                    hostId={hostId} setHostId={setHostId}
+                    scores={scores} setScores={setScores}
+                    gameStarted={gameStarted} setGameStarted={setGameStarted}
+                />
+            </div>
+            :
+            <div className="text-white w-full h-full flex justify-center">{roomStateMessage}</div>
+        }
+        <Modal
+            isOpen={openModal}
+            onClose={() => setOpenModal(false)}
+        >
+            <div className="text-center">
+                <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                {modalMessage}
+                </h3>
+        
+                <div className="flex justify-center gap-4">
+                    <button onClick={() => {
+                        if (shouldRedirect === true)
+                            router.push('/');
+                        setOpenModal(false);
+                    }}>
                         Close
                     </button>
-				</div>
-			</Modal>
-			{!localStorageChecked ?
-			<></>
-			:gameState === GAME_STATES.SETUP_NAME ?
-			<div className="flex flex-col gap-1 justify-center items-center p-12">
-				<div className='flex flex-col gap-1 justify-center items-center'>
-					<span className={styles.nameEmojiContainer}>{nameEmoji}</span>
-					<EmojiAccordeon onEmojiClick={(event) => setNameEmoji(event.emoji)} />
-					<input 
-						type="text" 
-						placeholder="Type your nickname"
-						value={nickname} 
-						onChange={(e) => setNickname(e.target.value)}
-						className="h-8 border-2 focus:border-fuchsia-200"
-					/>
-				</div>
-				<div className="flex gap-2">
-					<button onClick={() => {
-						if (!nickname?.length) return;
-						if (nickname?.length > 10) {
-							setErrorMessage('Nickname should be less than 10 characters');
-							setOpenModal(true);
-							return ;
-						}
-						fetchGameList();
-						setGameListLoading(true);
-						localStorage.setItem('nickname', nickname);
-						localStorage.setItem('emoji', nameEmoji);
-						updateState(GAME_STATES.GAME_LIST);
-					}}
-						className="p-3 text-white hover:translate-x-1"					
-					>&gt; Next </button>
-				</div>
-			</div>
-			:gameState === GAME_STATES.GAME_LIST ?
-			<div className="flex flex-col gap-2 relative pt-10 border-2 px-6 py-2 pb-5 justify-center items-center rounded-sm">
-				<button className="absolute top-1 left-1 p-2 opacity-75 hover:opacity-100 duration-75" onClick={() => updateState(GAME_STATES.SETUP_NAME)}>
-					<img className="w-4 h-4" src="icons/back.svg" alt="back"/>
-				</button>
-				<div className="absolute top-0 right-0 h-10 flex justify-center gap-1 items-center">
-					<button className="p-2 opacity-75 hover:opacity-100 duration-75" onClick={() => fetchGameList()}>
-						<img className="w-4 h-4" src="icons/refresh.svg" alt="refresh" />
-					</button>
-					<button className="p-2 opacity-75 hover:opacity-100 duration-75"
-						onClick={() => {
-							updateState(GAME_STATES.CREATE)
-					}}>
-						<img className="w-6 h-6" src="icons/add.svg" alt="create" />
-					</button>
-				</div>
-				<div className="mt-6 pb-7">
-					{gameListLoading ? (
-						<p className='text-white'>Loading...</p>
-					) : gameList.length === 0 ? (
-						<p className='text-white'>No game available</p>
-					) : (
-						<div className="flex flex-col">
-							{/* Grid Container for games */}
-							<div className="grid grid-cols-3 gap-2">
-								{gameList.slice((gameListPage - 1) * 3, gameListPage * 3).map((game, idx) => (
-									<div key={idx} className="flex flex-col gap-2 p-6 py-7 border-2 justify-center items-center text-white rounded-sm">
-										<span className="text-6xl">{game.emoji}</span>
-										<div className="flex gap-2 justify-center items-center">
-											<p className="text-lg">{game.difficulty}</p>
-											<p className="text-sm text-black bg-white px-2 rounded-sm">{game.playersCount}</p>
-										</div>
-										<button onClick={() => {
-												joinRoom(game.id);
-												router.push(`/game/${game.id}`);
-												updateState(GAME_STATES.JOINING);
-											}}
-											className="border-2 px-2 rounded-sm hover:bg-white hover:text-black duration-100"
-										>Join</button>
-									</div>
-								))}
-							</div>
-				
-							{/* Pagination controls, shown only if game list is not loading or empty */}
-							<div className="flex justify-center items-center gap-4 mt-4">
-								<button onClick={() => setGameListPage(gameListPage - 1)} disabled={gameListPage === 1} className="px-4 py-2 rounded-md text-white disabled:opacity-50">{'<'}</button>
-								<p className="text-white">{gameListPage}</p>
-								<button onClick={() => setGameListPage(gameListPage + 1)} disabled={gameListPage * 3 >= gameList.length} className="px-4 py-2 rounded-md text-white disabled:opacity-50">{'>'}</button>
-							</div>
-						</div>
-			
-					)}
-				</div>
-			</div>
-			:
-				<div className="flex flex-col gap-2 justify-center items-center">
-					<span className={styles.emojiContainer}>{roomEmoji}</span>
-					<EmojiAccordeon onEmojiClick={(event) => setRoomEmoji(event.emoji)} />
-					<div className="flex justify-center items-center gap-2">
-						<div className={styles.radioGroup}>
-							<input
-								type="radio"
-								id="easy"
-								name="level"
-								value="easy"
-								checked={level === 'easy'}
-								onChange={handleChange}
-								className={styles.hiddenRadio}
-							/>
-							<label htmlFor="easy" className={`${styles.button} ${level === 'easy' ? styles.selected : ''}`}>Easy</label>
-							
-							<input
-								type="radio"
-								id="medium"
-								name="level"
-								value="medium"
-								checked={level === 'medium'}
-								onChange={handleChange}
-								className={styles.hiddenRadio}
-							/>
-							<label htmlFor="medium" className={`${styles.button} ${level === 'medium' ? styles.selected : ''}`}>Medium</label>
-							
-							<input
-								type="radio"
-								id="hard"
-								name="level"
-								value="hard"
-								checked={level === 'hard'}
-								onChange={handleChange}
-								className={styles.hiddenRadio}
-							/>
-							<label htmlFor="hard" className={`${styles.button} ${level === 'hard' ? styles.selected : ''}`}>Hard</label>
-						</div>
-
-					</div>
-					<div className='flex gap-1'>
-						<button className="p-3 text-white hover:translate-x-1"
-							onClick={createRoom}>Create</button>
-						<button className="p-3 text-white hover:translate-x-1"
-							onClick={() => updateState(GAME_STATES.GAME_LIST)}>Back</button>
-					</div>
-
-				</div>
-			}
-		</div>
-    );
-};
+                </div>
+            </div>
+        </Modal>
+        </div>
+    )
+}
 
 export default Page;

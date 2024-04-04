@@ -75,6 +75,7 @@ export class Room {
             return false;
         this.joinedPlayer.shift();
         this.host = this.joinedPlayer[0];
+        this.broadcast('updateHost', { id: this.host });
         return true;
     }
 

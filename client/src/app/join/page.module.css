@@ -1,0 +1,41 @@
+.emojiContainer {
+	@apply text-6xl bg-slate-100 px-3 py-6 rounded-xl cursor-pointer select-none;
+}
+
+.nameEmojiContainer {
+	@apply text-7xl bg-gray-100 rounded-md pt-2 select-none text-center w-28 h-28 flex justify-center items-center;
+}
+
+.radioGroup {
+    display: flex;
+    gap: 10px; /* Adjust space between buttons as needed */
+}
+
+.hiddenRadio {
+    display: none; /* Hide the actual radio input */
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 15px;
+    border: 2px solid transparent; /* Adjust or remove border as needed */
+    border-radius: 4px; /* Rounded corners for the buttons */
+    background-color: #000; /* Default background */
+	color: white;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.button:hover {
+    background-color: #707070; /* Lighten on hover for feedback */
+}
+
+.button:focus:hover {
+	background-color: #e0e0e0;
+}
+
+.selected {
+    background-color: #e0e0e0; /* Color when selected */
+    color: black; /* Text color when selected */
+    border-color: #e0e0e0; /* Optional: if you want a border around selected */
+}
