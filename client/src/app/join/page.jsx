@@ -96,6 +96,7 @@ const Page = () => {
 			if (!response.ok) {
 				setErrorMessage('Error joining room');
 				setOpenModal(true);
+				updateState(GAME_STATES.GAME_LIST);
 				return;
 			}
 		

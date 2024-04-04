@@ -91,11 +91,6 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 			console.log('rowsCleared', data);
 		})
 
-		socket.on('updateHost', (data) => {
-            console.log('updateHost', data);
-            setHostId(data.id);
-        });
-
 		socket.on('playerJoined', (data) => {
             setPlayers(prev => [...prev, data]);
 			setScores(prev => new Map(prev.set(data.id, 0)));
@@ -111,10 +106,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 				newMap.delete(data.id);
 				return newMap;
 			});
-			if (!gameStarted)
-				deleteFromOtherGrid(data.id);
-			else
-				console.log('playerLeft', data);
+			deleteFromOtherGrid(data.id);
 		});
 
 		return () => {
@@ -124,8 +116,6 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 			socket.off('rowsCleared');
 			socket.off('playerJoined');
 			socket.off('playerLeft');
-			socket.off('updateHost');
-
 		};
 	}, [socket, players, scores, othersGrid, myGrid]);
 
@@ -164,7 +154,7 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 
   return (
 	<>
-		<PlayerList players={players} hostId={hostId} socketId={socket?.id}/>
+		<PlayerList players={players} hostId={hostId} socketId={socket?.id} gameOverSet={gameOverSet}/>
 		<div className="m-3 relative p-12 pt-16">
 			{/* Game Header */}
 			<div className="absolute w-full top-0 left-0 text-white h-12 flex justify-between items-center border-sm gap-2">

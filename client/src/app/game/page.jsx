@@ -100,7 +100,8 @@ const Page = ({params}) => {
             } else if (winner === socket.id) {
                 setModalMessage('You are the winner');
             } else {
-                setModalMessage('The winner is ' + players.find(player => player.id === winner).nickname);
+                const win = players.find(player => player.id === winner);
+                win && setModalMessage('The winner is ' + win.nickname + ' ' + win.emoji);
             }
             setOpenModal(true);
         })
@@ -125,7 +126,7 @@ const Page = ({params}) => {
             socket.off('scoreUpdate');
             socket.off('roomError');
         });
-    }, [socket])
+    }, [socket, players])
 
     return (
         <div className="relative w-full">

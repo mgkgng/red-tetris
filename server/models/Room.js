@@ -17,10 +17,8 @@ export class Room {
     }
 
     broadcast(event, data) {
-        // TODO check if it's binded well when a player leaves
-        for (let player of this.players.values()) {
+        for (let player of this.players.values())
             player.socket.connected && player.socket.emit(event, data);
-        }
     }
 
     addPlayer(socketId, player) {
@@ -73,9 +71,11 @@ export class Room {
         this.players.delete(socketId);
         if (this.players.size === 0)
             return false;
-        this.joinedPlayer.shift();
-        this.host = this.joinedPlayer[0];
-        this.broadcast('updateHost', { id: this.host });
+        this.joinedPlayer = this.joinedPlayer.filter(id => id !== socketId);
+        if (this.host === socketId) {
+            this.host = this.joinedPlayer[0];
+            this.broadcast('updateHost', { id: this.host });
+        }
         return true;
     }
 

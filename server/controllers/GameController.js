@@ -40,7 +40,6 @@ export const verifyRoom = (req, res) => {
             res.status(404).json({ message: "Room not found." });
             return;
         }
-        console.log('now room players:', room.players.values());
         res.status(200).json({ 
             titleEmojis: room.titleEmojis,
             series: room.series,

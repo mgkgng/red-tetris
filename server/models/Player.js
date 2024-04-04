@@ -32,6 +32,11 @@ export class Player {
         if (this.game.gameOver)
             return;
         this.game.intervalId = setInterval(() => {
+            if (!this.room.playing || this.game.gameOver) {
+                clearInterval(this.game.intervalId);
+                return;
+            }
+            
             let shouldSend = true;
             if (!this.moveDown())
                 shouldSend = this.afterDropped();

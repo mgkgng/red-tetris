@@ -14,7 +14,7 @@
     @apply text-5xl;
 }
 
-@media screen and (max-width: 30rem) {
+@media screen and (max-width: 42rem) {
     .playerListWrapper {
         @apply w-full top-0 absolute;
     }
@@ -29,6 +29,10 @@
 
     .emoji {
         @apply text-3xl;
+    }
+
+    .nickname {
+        @apply text-xs;
     }
 }
 
