@@ -43,16 +43,13 @@ class ScoreManager {
             score: player.score,
             date: new Date().toISOString()
         }
-        console.log('score updated', player.name, player.score);
         this.scores.push(info);
         this.scores.sort((a, b) => b.score - a.score);
         this.scores = this.scores.slice(0, 10);
         this.saveScoresToFile();
     }
 
-    getScores() {
-        return this.scores;
-    }
+    getScores() { return this.scores; }
 }
 
 export const scoreManager = new ScoreManager();

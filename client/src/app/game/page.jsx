@@ -61,7 +61,6 @@ const Page = ({params}) => {
             try {
                 const response = await fetch(`http://localhost:3000/api/verify_room/${hash}`);
                 if (!response.ok) {
-                    // console.log(response.status)
                     setRoomStateMessage('Room not found');
                     return;
                 }
@@ -111,7 +110,6 @@ const Page = ({params}) => {
         });
 
         socket.on('roomError', (data) => {
-            console.log('in room error')
             setModalMessage(data.message);
             setShouldRedirect(true);
             setOpenModal(true);

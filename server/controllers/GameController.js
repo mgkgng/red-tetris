@@ -6,7 +6,7 @@ export const getGameList = (req, res) => {
 
 export const joinRoom = (req, res) => {
     const { roomId } = req.body;
-    const room = gameManager.getRoom(roomId);
+    const room = gameManager.getRoomByRoomId(roomId);
 
     if (!room) {
         return res.status(404).json({ success: false, message: "Room not found." });
@@ -28,14 +28,13 @@ export const verifyRoom = (req, res) => {
     const { id } = req.params;
     if (gameManager.roomInCreation.has(id)) {
         const room = gameManager.createRoom(id);
-        console.log('room created:', id);
         res.status(200).json({ 
             titleEmojis: room.titleEmojis,
             players: [],
         });
         gameManager.roomInCreation.delete(id);
     } else {
-        const room = gameManager.getRoom(id);
+        const room = gameManager.getRoomByRoomId(id);
         if (!room) {
             res.status(404).json({ message: "Room not found." });
             return;

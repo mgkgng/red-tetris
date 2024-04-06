@@ -8,15 +8,15 @@ class GameManager {
         this.roomInCreation = new Map();
         this.players = new Map();
 
-        const id1 = this.setRoomInCreation('🍎', 'easy');
-        const id2 = this.setRoomInCreation('🍉', 'medium');
-        const id3 = this.setRoomInCreation('🍌', 'hard');
-        const id4 = this.setRoomInCreation('🍇', 'easy');
-        this.createRoom(id1);
-        this.createRoom(id2);
-        this.createRoom(id3);
-        this.createRoom(id4);
-
+        // If you want to test
+        // const id1 = this.setRoomInCreation('🍎', 'easy');
+        // const id2 = this.setRoomInCreation('🍉', 'medium');
+        // const id3 = this.setRoomInCreation('🍌', 'hard');
+        // const id4 = this.setRoomInCreation('🍇', 'easy');
+        // this.createRoom(id1);
+        // this.createRoom(id2);
+        // this.createRoom(id3);
+        // this.createRoom(id4);
     }
 
     addPlayerToRoom(name, roomId) {
@@ -57,13 +57,8 @@ class GameManager {
         return room;
     }
 
-    getPlayerBySocketId(socketId) {
-        return this.players.get(socketId);
-    }
-
-    getRoomByRoomId(roomId) {
-        return this.rooms.get(roomId);
-    }
+    getPlayerBySocketId(socketId) { return this.players.get(socketId); }
+    getRoomByRoomId(roomId) { return this.rooms.get(roomId);}
 
     getAvailableRooms() {
         const res = [];
@@ -73,11 +68,6 @@ class GameManager {
         }
         return res;
     }
-
-    getRoom(id) {
-        return this.rooms.get(id);
-    }
-
 }
 
 export const gameManager = new GameManager();

@@ -22,7 +22,6 @@ export class Room {
     }
 
     addPlayer(socketId, player) {
-        console.log('adding player: ', socketId)
         this.players.set(socketId, player);
         this.joinedPlayer.push(socketId);
         if (!this.host) {

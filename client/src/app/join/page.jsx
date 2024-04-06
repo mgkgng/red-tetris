@@ -126,7 +126,6 @@ const Page = () => {
 			}
 
 			const data = await response.json();
-			console.log(data);
 
 			localStorage.setItem('nickname', nickname);
 			localStorage.setItem('emoji', nameEmoji);

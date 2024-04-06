@@ -18,5 +18,5 @@ app.use('/api', apiRoutes); // This mounts your API routes under the /api prefix
 initSocketServer(server);
 
 server.listen(3000, () => {
-    console.log(`Server listening on port ${PORT}...`);
+    console.log(`Red-tetris server initialized on port ${PORT}...`);
 });

@@ -16,7 +16,6 @@ const Page = () => {
         try {
             const response = await fetch(`http://localhost:3000/api/get_rank`);
             const data = await response.json();
-            console.log(data);
             setRank(data);
             if (pageState === PAGE_STATES.LOADING)
                 setPageState(PAGE_STATES.LOADED);

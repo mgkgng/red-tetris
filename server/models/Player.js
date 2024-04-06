@@ -14,9 +14,7 @@ export class Player {
         this.playing = false;
     }
 
-    initTetris(series) {
-        this.game = new Tetris(series);
-    }
+    initTetris(series) { this.game = new Tetris(series); }
 
     sendGameState() {
         this.room && this.room.broadcast('gameStateUpdate', {
