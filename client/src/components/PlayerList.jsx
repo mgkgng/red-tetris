@@ -1,3 +1,4 @@
+import React from 'react';
 import styles from './PlayerList.module.css';
 
 const PlayerList = ({ players, hostId, socketId, gameOverSet }) => {
@@ -5,7 +6,7 @@ const PlayerList = ({ players, hostId, socketId, gameOverSet }) => {
         <div className={styles.playerListWrapper}>
             <div className={styles.playerList}>
                 {players.map((player, index) => (
-                    <div key={index} className={`
+                    <div key={index} data-testid={`player-${player.id}`} className={`
                         ${styles.playerCell}
                         ${(player.id === hostId) ? "border-2 border-red-300" : ""}
                         ${(player.id === socketId ? "bg-green-400"
