@@ -1,11 +1,10 @@
-'use client'
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { redirect } from "next/navigation";
 import TetrisGame from "@/components/tetris/TetrisGame";
 import io from 'socket.io-client';
 import Modal from '@/components/Modal';
+import React from "react";
 
 const Page = ({params}) => {
     const [socket, setSocket] = useState(null);
@@ -151,9 +150,9 @@ const Page = ({params}) => {
         
                 <div className="flex justify-center gap-4">
                     <button onClick={() => {
+                        setOpenModal(false);
                         if (shouldRedirect === true)
                             router.push('/');
-                        setOpenModal(false);
                     }}>
                         Close
                     </button>
