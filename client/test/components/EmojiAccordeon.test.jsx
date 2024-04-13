@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import EmojiAccordeon from '@/components/EmojiAccordeon';
-import '@testing-library/jest-dom';
 
 jest.mock('emoji-picker-react', () => ({
   __esModule: true,
