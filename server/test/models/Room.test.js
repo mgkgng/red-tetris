@@ -27,7 +27,7 @@ function createMockPlayer(socketId) {
 }
 
 
-describe("Room class", () => {
+describe("Room", () => {
     let room;
     let mockSocket;
 
