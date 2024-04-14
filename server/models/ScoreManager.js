@@ -1,13 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const basePath = process.cwd();
 
-const SCORES_JSON_PATH = path.join(__dirname, '..', 'data', 'scores.json');
+const SCORES_JSON_PATH = path.join(basePath, 'data', 'scores.json');
 
-class ScoreManager {
+export class ScoreManager {
     constructor() {
         this.scores = this.loadScoresFromFile();
     }
@@ -32,7 +30,7 @@ class ScoreManager {
     }
 
     addScore(player) {
-        if (player.score === 0) return ;
+        if (player.score === 0) return;
     
         if (this.scores.length >= 10 && player.score < this.scores[9].score)
             return;
@@ -42,7 +40,7 @@ class ScoreManager {
             emoji: player.emoji,
             score: player.score,
             date: new Date().toISOString()
-        }
+        };
         this.scores.push(info);
         this.scores.sort((a, b) => b.score - a.score);
         this.scores = this.scores.slice(0, 10);
