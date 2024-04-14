@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { redirect } from "next/navigation";
@@ -150,9 +152,9 @@ const Page = ({params}) => {
         
                 <div className="flex justify-center gap-4">
                     <button onClick={() => {
-                        setOpenModal(false);
                         if (shouldRedirect === true)
                             router.push('/');
+                        setOpenModal(false);
                     }}>
                         Close
                     </button>

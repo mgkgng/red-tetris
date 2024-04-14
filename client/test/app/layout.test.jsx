@@ -7,11 +7,21 @@ jest.mock('next/font/google', () => ({
 }));
 
 describe('RootLayout', () => {
+  let errorSpy;
+
+  beforeAll(() => {
+    errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    errorSpy.mockRestore();
+  });
+
   it('renders children and applies correct class names', () => {
     render(
-		<RootLayout>
-			<div>Test Child</div>
-		</RootLayout>,
+      <RootLayout>
+        <div>Test Child</div>
+      </RootLayout>,
     );
 
     const mainElement = screen.getByRole('main');

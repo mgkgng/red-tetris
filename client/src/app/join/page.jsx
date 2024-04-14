@@ -133,7 +133,8 @@ const Page = () => {
 			router.push(`game#${data.roomId}`);
 		} catch (e) {
 			console.error(e);
-			throw error;
+			setErrorMessage('Failed to create room. Please try again.');
+			setOpenModal(true);
 		}
 	}
 

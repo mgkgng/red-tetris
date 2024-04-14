@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -- -p 4242",
-    "build": "next build",
+    "build": "mv babel.config.js .babel_ && next build; mv .babel_ babel.config.js",
     "start": "next start",
     "lint": "next lint",
     "test": "jest"
@@ -15,6 +15,7 @@
     "flowbite-react": "^0.7.2",
     "htmx.org": "^1.9.10",
     "i": "^0.3.7",
+    "jest-fetch-mock": "^3.0.3",
     "next": "14.0.4",
     "npm": "^10.5.0",
     "react": "^18",
