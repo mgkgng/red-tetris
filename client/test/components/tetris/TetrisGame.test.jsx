@@ -81,6 +81,4 @@ describe('TetrisGame', () => {
       expect(mockSocket.emit).toHaveBeenCalledWith('stopAccelerate');
       expect(mockSocket.emit).toHaveBeenCalledWith('hardDrop');
     });
-    
-  
 });
