@@ -1,11 +1,8 @@
-// socketServer.test.js
-
 import { Server } from 'socket.io';
 import { createServer } from 'http';
 import { initSocketServer } from '../socket';
 import { Player } from '../models/Player';
 import { gameManager } from '../models/GameManager';
-import { PLAYER_LIMIT } from '../constants';
 
 jest.mock('socket.io', () => {
   return { Server: jest.fn(() => ({
@@ -50,10 +47,9 @@ describe('Socket Server Initialization', () => {
         },
         emit: jest.fn(),
         on: jest.fn(),
-        join: jest.fn()  // Assume there's a socket.join in your real implementation
+        join: jest.fn()
     };
 
-    // Mock the room to be not null, not playing, and not full
     const mockRoom = {
         playing: false,
         joinedPlayer: [],
@@ -88,7 +84,5 @@ it('should emit "Room not found" if no room exists', () => {
 
     expect(mockSocket.emit).toHaveBeenCalledWith('roomError', { message: 'Room not found' });
 });
-
-  // Additional tests would include scenarios for room not found, room full, etc.
 });
 
