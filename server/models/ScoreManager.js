@@ -1,11 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const basePath = process.cwd();
 
-const SCORES_JSON_PATH = path.join(__dirname, '..', 'data', 'scores.json');
+const SCORES_JSON_PATH = path.join(basePath, 'data', 'scores.json');
 
 class ScoreManager {
     constructor() {
