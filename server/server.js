@@ -11,8 +11,7 @@ const server = http.createServer(app);
 app.use(cors());
 app.use(express.json());
 
-// Use your routes
-app.use("/api", apiRoutes); // This mounts your API routes under the /api prefix
+app.use('/api', apiRoutes);
 
 initSocketServer(server);
 

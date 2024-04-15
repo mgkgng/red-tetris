@@ -1,4 +1,4 @@
-import { TETROMINO_CODES, TetrisScores, BOARD_COLS } from '../constants.js';
+import { TETROMINO_CODES, TetrisScores } from '../constants.js';
 import { Tetris } from './Tetris.js';
 import { scoreManager } from './ScoreManager.js';
 

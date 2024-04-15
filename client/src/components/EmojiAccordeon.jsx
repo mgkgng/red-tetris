@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react';
 import Picker from "emoji-picker-react";
 import { Accordion } from 'flowbite-react';
 import styles from './EmojiAccordeon.module.css';

@@ -5,8 +5,6 @@ export const TETRIS_BLOCK_SIZE = 30;
 
 export const DEFAULT_SPEED = 1000;
 
-// For now I won't care much a lot for the colors or whatever.
-
 export const SHAPES = {
     I: 1,
     J: 2,

@@ -8,26 +8,26 @@
 
 .radioGroup {
     display: flex;
-    gap: 10px; /* Adjust space between buttons as needed */
+    gap: 10px;
 }
 
 .hiddenRadio {
-    display: none; /* Hide the actual radio input */
+    display: none;
 }
 
 .button {
     display: inline-block;
     padding: 10px 15px;
-    border: 2px solid transparent; /* Adjust or remove border as needed */
-    border-radius: 4px; /* Rounded corners for the buttons */
-    background-color: #000; /* Default background */
+    border: 2px solid transparent;
+    border-radius: 4px;
+    background-color: #000;
 	color: white;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
 
 .button:hover {
-    background-color: #707070; /* Lighten on hover for feedback */
+    background-color: #707070;
 }
 
 .button:focus:hover {
@@ -35,7 +35,7 @@
 }
 
 .selected {
-    background-color: #e0e0e0; /* Color when selected */
-    color: black; /* Text color when selected */
-    border-color: #e0e0e0; /* Optional: if you want a border around selected */
+    background-color: #e0e0e0;
+    color: black;
+    border-color: #e0e0e0;
 }

@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import TetrisGame from "@/components/tetris/TetrisGame";
 import io from 'socket.io-client';
 import Modal from '@/components/Modal';
+import React from "react";
 
 const Page = ({params}) => {
     const [socket, setSocket] = useState(null);

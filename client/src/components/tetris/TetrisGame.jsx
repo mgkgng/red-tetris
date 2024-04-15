@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './page.module.css';
 import { TETRIS_COLS, TETRIS_ROWS } from '@/constants.js';
 import PlayerList from '../PlayerList.jsx';
@@ -146,75 +146,72 @@ const TetrisGame = ({ socket, players, setPlayers, hostId, setHostId, scores, se
 		return () => window.removeEventListener('keydown', handleKeyPress);
 	}, [socket, gameStarted]);
 
-  return (
-	<>
+	return (
+		<>
 		<PlayerList players={players} hostId={hostId} socketId={socket?.id} gameOverSet={gameOverSet}/>
-		<div className="m-3 relative p-12 pt-16">
+		<div className="m-3 relative p-12 pt-16" data-testid="gameArea">
 			{/* Game Header */}
 			<div className="absolute w-full top-0 left-0 text-white h-12 flex justify-between items-center border-sm gap-2">
-				<div className='flex h-8 w-3/5 justify-between items-center border-2 border-white rounded-sm px-2'>
-					<p>Score:</p>
-					<p>{scores.get(socket?.id)}</p>
-				</div>
-				{!gameStarted && hostId === socket?.id &&
+			<div className='flex h-8 w-3/5 justify-between items-center border-2 border-white rounded-sm px-2'>
+				<p>Score:</p>
+				<p>{scores.get(socket?.id)}</p>
+			</div>
+			{!gameStarted && hostId === socket?.id &&
 				<button onClick={() => socket?.emit('startGame')}
-					className="text-black bg-white hover:bg-gray-300 px-3 duration-150"
+				className="text-black bg-white hover:bg-gray-300 px-3 duration-150"
 				>start</button>
-				}
+			}
 			</div>
 			{/* Game Body */}
 			<div className={styles.tetrisGrid}>
-				{myGrid.map((row, rowIndex) => (
-					<div key={rowIndex} className={styles.row}>
-					{row.map((cell, cellIndex) => (
-						<div
-							key={cellIndex}
-							className={`${
-								!gameOverSet.has(socket?.id)
-									? cell === MALUS
-										? 'bg-stone-500' 
-										: `${BLOCK_COLORS[cell % 8]}`
-									: cell
-										? 'bg-gray-400'
-										: 'bg-white'
-							  } ${styles.cell}`}
-						></div>
-					))}
-					</div>
+			{myGrid.map((row, rowIndex) => (
+				<div key={rowIndex} className={styles.row}>
+				{row.map((cell, cellIndex) => (
+					<div
+					key={cellIndex}
+					className={`${
+						!gameOverSet.has(socket?.id)
+						? cell === MALUS
+							? 'bg-stone-500' 
+							: `${BLOCK_COLORS[cell % 8]}`
+						: cell
+							? 'bg-gray-400'
+							: 'bg-white'
+					} ${styles.cell}`}
+					></div>
 				))}
+				</div>
+			))}
 			</div>
-			
 		</div>
 		<div className={styles.othersGameGrid}>
 			{Array.from(othersGrid.entries()).map(([playerId, grid], index) => (
 			<div className={styles.othersTetrisWrapper} key={playerId}>
 				<div className={styles.othersTetrisGrid}>
-					{grid.map((row, rowIndex) => (
+				{grid.map((row, rowIndex) => (
 					<div key={rowIndex} className={styles.othersRow}>
-						{row.map((cell, cellIndex) => (
+					{row.map((cell, cellIndex) => (
 						<div
-							key={cellIndex}
-							className={`${
-								!gameOverSet.has(playerId)
-									? cell === MALUS
-										? 'bg-stone-500' 
-										: `${BLOCK_COLORS[cell % 8]}`
-									: cell
-										? 'bg-gray-400'
-										: 'bg-white'
-							  } ${styles.cell}`}
+						key={cellIndex}
+						className={`${
+							!gameOverSet.has(playerId)
+							? cell === MALUS
+								? 'bg-stone-500' 
+								: `${BLOCK_COLORS[cell % 8]}`
+							: cell
+								? 'bg-gray-400'
+								: 'bg-white'
+						} ${styles.cell}`}
 						></div>
-						))}
-					</div>
 					))}
-				</div>d
+					</div>
+				))}
+				</div>
 			</div>
 			))}
 		</div>
-		
-
-	</>
-  );
+		</>
+	);
 }
 
 export default TetrisGame;
