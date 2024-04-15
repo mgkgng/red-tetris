@@ -19,13 +19,6 @@ class GameManager {
         // this.createRoom(id4);
     }
 
-    addPlayerToRoom(name, roomId) {
-        const room = this.rooms.get(roomId);
-        if (!room) return false;
-        const player = new Player(socket, name, roomId, room.series);
-        room.addPlayer(player);
-    }
-
     removePlayerFromRoom(socketId, roomId) {
         const room = this.getRoomByRoomId(roomId);
         if (!room) return ;

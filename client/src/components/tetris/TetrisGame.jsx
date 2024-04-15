@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './page.module.css';
 import { TETRIS_COLS, TETRIS_ROWS } from '@/constants.js';
 import PlayerList from '../PlayerList.jsx';

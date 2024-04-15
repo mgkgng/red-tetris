@@ -1,12 +1,12 @@
 .tetrisGrid {
 	display: grid;
-	grid-template-rows: repeat(20, 2.67vw); /* 20 rows, each 30px high */
+	grid-template-rows: repeat(20, 2.67vw);
 	gap: 0.62vw;
 }
 
 .row {
 	@apply rounded-xl;
-	grid-template-columns: repeat(10, 2.67vw); /* 10 columns, each 30px wide */
+	grid-template-columns: repeat(10, 2.67vw); 
 	display: grid;
 	gap: 0.53vw;
 }

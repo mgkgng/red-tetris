@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
-import anime, { set } from 'animejs';
+import anime from 'animejs';
 import EmojiAccordeon from '@/components/EmojiAccordeon';
 import Modal from '@/components/Modal';
 import React from "react";
@@ -207,7 +207,6 @@ const Page = () => {
 						<p className='text-white'>No game available</p>
 					) : (
 						<div className="flex flex-col">
-							{/* Grid Container for games */}
 							<div className="grid grid-cols-3 gap-2">
 								{gameList.slice((gameListPage - 1) * 3, gameListPage * 3).map((game, idx) => (
 									<div key={idx} className="flex flex-col gap-2 p-6 py-7 border-2 justify-center items-center text-white rounded-sm">
@@ -226,7 +225,6 @@ const Page = () => {
 								))}
 							</div>
 				
-							{/* Pagination controls, shown only if game list is not loading or empty */}
 							<div className="flex justify-center items-center gap-4 mt-4">
 								<button onClick={() => setGameListPage(gameListPage - 1)} disabled={gameListPage === 1} className="px-4 py-2 rounded-md text-white disabled:opacity-50">{'<'}</button>
 								<p className="text-white">{gameListPage}</p>
