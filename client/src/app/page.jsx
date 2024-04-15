@@ -1,16 +1,10 @@
 'use client'
+
+import React from 'react';
 import styles from './page.module.css'
 import Link from 'next/link';
-import { useEffect } from 'react';
 
 export default function Home() {
-	let width, height;
-	useEffect(() => {
-		width = screen.width;
-		height = screen.height;
-
-	}, []);
-
 	return (
 		<div className="p-2 rounded-md flex gap-2">
 			<div className=" absolute px-5 py-1 top-1/4 left-1/2 -translate-x-1/2 z-50">

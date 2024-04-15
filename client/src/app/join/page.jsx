@@ -6,6 +6,7 @@ import styles from './page.module.css';
 import anime, { set } from 'animejs';
 import EmojiAccordeon from '@/components/EmojiAccordeon';
 import Modal from '@/components/Modal';
+import React from "react";
 
 const GAME_STATES = {
 	SETUP_NAME: 0,
@@ -132,7 +133,8 @@ const Page = () => {
 			router.push(`game#${data.roomId}`);
 		} catch (e) {
 			console.error(e);
-			throw error;
+			setErrorMessage('Failed to create room. Please try again.');
+			setOpenModal(true);
 		}
 	}
 
