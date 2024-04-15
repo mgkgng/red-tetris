@@ -153,4 +153,19 @@ describe("Player", () => {
       expect(player.game.currentPos.col).toBe(4);
     }
   );
+
+  it("should not rotate the piece if the position is invalid", () => {
+    player.game.isPositionValid.mockReturnValue(false);
+    expect(player.rotate()).toBe(false);
+    expect(player.game.currentPiece.rotate).not.toHaveBeenCalled();
+  });
+
+  it("should try to rotate with column adjustments when initial rotation fails", () => {
+    player.game.isPositionValid
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true);
+    expect(player.rotate()).toBe(true);
+    expect(player.game.cleanCurrentPosition).toHaveBeenCalled();
+  });
 });

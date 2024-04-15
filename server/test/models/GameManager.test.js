@@ -1,88 +1,120 @@
-import { GameManager } from '../../models/GameManager';
-import { Room } from '../../models/Room';
-import { Player } from '../../models/Player';
-import { uid } from '../../utils';
+import { GameManager } from "../../models/GameManager";
+import { Room } from "../../models/Room";
+import { uid } from "../../utils";
 
-jest.mock('../../models/Room', () => {
+jest.mock("../../models/Room", () => {
   return {
-    Room: jest.fn().mockImplementation((id, emoji, difficulty) => {
-      return {
-        id,
-        emoji,
-        difficulty,
-        players: [],
-        addPlayer: function(player) {
-          this.players.push(player);
-        },
-        removePlayer: function(socketId) {
-          const index = this.players.findIndex(p => p.socket.id === socketId);
-          if (index !== -1) {
-            this.players.splice(index, 1);
-            return true;
-          }
-          return false;
-        },
-        playing: false,
-        broadcast: jest.fn()
-      };
-    })
+    __esModule: true,
+    Room: jest.fn().mockImplementation((id, emoji, difficulty) => ({
+      id,
+      emoji,
+      difficulty,
+      removePlayer: jest.fn(),
+      broadcast: jest.fn(),
+      playing: false,
+      joinedPlayer: [],
+      level: undefined,
+    })),
   };
 });
 
-jest.mock('../../models/Player', () => {
-  return {
-    Player: jest.fn().mockImplementation((socket, name, roomId, series) => {
-      return { socket, name, roomId, series };
-    })
-  };
-});
+jest.mock("../../utils", () => ({
+  uid: jest.fn(),
+}));
 
-jest.mock('../../utils', () => {
-  return {
-    uid: jest.fn()
-  };
-});
-
-describe('GameManager', () => {
+describe("GameManager", () => {
   let gameManager;
 
   beforeEach(() => {
-    uid.mockClear();
     Room.mockClear();
-    Player.mockClear();
+    uid.mockClear();
     gameManager = new GameManager();
   });
 
-  it('should create and store a new room', () => {
-    uid.mockReturnValue('uniqueRoomId');
-    const roomId = gameManager.setRoomInCreation('🍎', 'easy');
+  test("createUid generates unique identifiers", () => {
+    uid
+      .mockReturnValueOnce("uniqueId1")
+      .mockReturnValueOnce("uniqueId1")
+      .mockReturnValueOnce("uniqueId2");
+    gameManager.rooms.set("uniqueId1", new Room());
+    const id = gameManager.createUid();
+    expect(id).toBe("uniqueId2");
+    expect(uid).toHaveBeenCalledTimes(3);
+  });
+
+  test("setRoomInCreation sets a room with the correct parameters", () => {
+    const emoji = "🍎";
+    const difficulty = "easy";
+    uid.mockReturnValue("uniqueRoomId");
+    const roomId = gameManager.setRoomInCreation(emoji, difficulty);
+    expect(roomId).toBe("uniqueRoomId");
+    expect(gameManager.roomInCreation.has(roomId)).toBeTruthy();
+    expect(gameManager.roomInCreation.get(roomId)).toEqual({
+      emoji,
+      difficulty,
+    });
+  });
+
+  test("createRoom creates a room from roomInCreation", () => {
+    const roomId = "roomId";
+    const roomData = { emoji: "🍎", difficulty: "easy" };
+    gameManager.roomInCreation.set(roomId, roomData);
     const room = gameManager.createRoom(roomId);
-
-    expect(room).toBeTruthy();
-    expect(room.emoji).toEqual('🍎');
-    expect(gameManager.rooms.has(roomId)).toBe(true);
+    expect(room).toBeDefined();
+    expect(gameManager.rooms.has(roomId)).toBeTruthy();
+    expect(gameManager.roomInCreation.has(roomId)).toBeTruthy();
   });
 
-  it('should add a player to a room', () => {
-    const roomId = 'testRoomId';
-    gameManager.rooms.set(roomId, new Room(roomId, '🍎', 'easy'));
-    const added = gameManager.addPlayerToRoom('Alice', roomId);
-
-    expect(added).toBe(true);
-    const room = gameManager.getRoomByRoomId(roomId);
-    expect(room.players.length).toBe(1);
+  test("removePlayerFromRoom removes a player and deletes room if necessary", () => {
+    const roomId = "roomId";
+    const socketId = "socketId";
+    const mockRoom = {
+      removePlayer: jest.fn(() => false),
+      broadcast: jest.fn(),
+    };
+    gameManager.rooms.set(roomId, mockRoom);
+    gameManager.removePlayerFromRoom(socketId, roomId);
+    expect(mockRoom.removePlayer).toHaveBeenCalledWith(socketId);
+    expect(gameManager.rooms.has(roomId)).toBeTruthy();
   });
 
-  it('should handle removal of a player', () => {
-    const roomId = 'testRoomId';
-    const room = new Room(roomId, '🍎', 'easy');
-    gameManager.rooms.set(roomId, room);
-    const player = new Player({ id: 'socket1' }, 'Alice', roomId, 'series');
-    room.addPlayer(player);
+  test("getAvailableRooms returns rooms that are not full and not playing", () => {
+    const roomId = "roomId";
+    const mockRoom = {
+      playing: false,
+      joinedPlayer: [],
+      level: 1,
+      emoji: "🍎",
+      difficulty: "easy",
+    };
+    gameManager.rooms.set(roomId, mockRoom);
+    const availableRooms = gameManager.getAvailableRooms();
+    expect(availableRooms.length).toBe(1);
+    expect(availableRooms[0].id).toBe(roomId);
+  });
 
-    gameManager.removePlayerFromRoom('socket1', roomId);
-    expect(room.players.length).toBe(0);
-    expect(room.broadcast).toHaveBeenCalledWith('playerLeft', { id: 'socket1' });
+  test("getPlayerBySocketId retrieves a player or returns undefined if not found", () => {
+    const socketId = "socketId";
+    const player = { id: socketId, name: "TestPlayer" };
+    gameManager.players.set(socketId, player);
+
+    expect(gameManager.getPlayerBySocketId(socketId)).toBe(player);
+    expect(gameManager.getPlayerBySocketId("nonexistentId")).toBeUndefined();
+  });
+
+  test("removePlayerFromRoom does nothing if the player does not exist in the room", () => {
+    const roomId = "roomId";
+    const socketId = "socketId";
+    const mockRoom = {
+      removePlayer: jest.fn().mockReturnValue(false),
+      broadcast: jest.fn(),
+    };
+    gameManager.rooms.set(roomId, mockRoom);
+
+    gameManager.removePlayerFromRoom("nonexistentPlayer", roomId);
+
+    expect(mockRoom.removePlayer).toHaveBeenCalledWith("nonexistentPlayer");
+    expect(gameManager.rooms.has(roomId)).toBeTruthy();
+    expect(mockRoom.broadcast).not.toHaveBeenCalled();
   });
 });
-

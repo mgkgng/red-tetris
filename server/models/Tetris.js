@@ -1,7 +1,7 @@
 import { Tetromino } from './Tetromino.js';
 import { BOARD_ROWS, BOARD_COLS, TetrisFrames } from '../constants.js';
 
-const FIX_OFFSET = 8;
+export const FIX_OFFSET = 8;
 const MALUS = 255;
 
 export class Tetris {
