@@ -3,8 +3,8 @@ module.exports = {
 	  '^.+\\.js$': 'babel-jest'
 	},
 	testEnvironment: 'node',
-	collectCoverage: true, // This line enables coverage collection
-	coverageThreshold: {  // Define minimum coverage thresholds
+	collectCoverage: true,
+	coverageThreshold: {
 	  global: {
 		statements: 70,
 		branches: 50,

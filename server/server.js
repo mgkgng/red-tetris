@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import http from "http";
 import { initSocketServer } from "./socket.js";
-import apiRoutes from "./routes/api.js"; // Import your API routes
+import apiRoutes from "./routes/api.js";
 
 const PORT = 3000;
 const app = express();
