@@ -2,7 +2,7 @@ import { Room } from './Room.js';
 import { Player } from './Player.js';
 import { uid } from '../utils.js';
 
-class GameManager {
+export class GameManager {
     constructor() {
         this.rooms = new Map();
         this.roomInCreation = new Map();

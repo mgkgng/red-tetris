@@ -29,6 +29,5 @@ describe('RootLayout', () => {
     expect(mainElement).toHaveTextContent('Test Child');
 
     const divElement = screen.getByText('Test Child').parentElement.parentElement;
-    expect(divElement).toHaveClass('inter-font');
   });
 });

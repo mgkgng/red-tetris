@@ -1,7 +1,7 @@
 import { TetrisFrames, StartingLevelPerDifficulty } from '../constants.js';
 import { scoreManager } from './ScoreManager.js';
 
-const LINES_TO_LEVEL_UP = 10;
+export const LINES_TO_LEVEL_UP = 10;
 
 export class Room {
     constructor(uid, emoji, difficulty='easy') {
