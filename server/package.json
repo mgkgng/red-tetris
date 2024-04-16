@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "https://github.com/mgkgng/red-tetris",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "nodemon server.js",
     "test": "jest"
